@@ -241,7 +241,7 @@ class DW_Parcelas_Frontend {
             $text_after = ' ' . esc_html($settings['text_after_installments']);
         } elseif (!$best['has_interest']) {
             // Se não tem texto personalizado e não tem juros, usa "sem juros"
-            $text_after = ' ' . __('sem juros', 'dw-parcelas-pix-woocommerce');
+            $text_after = ' ' . __('sem juros', 'dw-parcelas-customizadas-woo');
         }
         
         // Ícone do cartão (se habilitado)
@@ -288,7 +288,7 @@ class DW_Parcelas_Frontend {
         echo '<span class="dw-parcelas-text" style="' . esc_attr($styles['text']) . '">';
         echo esc_html($text_before);
         printf(
-            __('até %dx de %s%s', 'dw-parcelas-pix-woocommerce'),
+            __('até %dx de %s%s', 'dw-parcelas-customizadas-woo'),
             $installment_number,
             $installment_value,
             $text_after
@@ -330,7 +330,7 @@ class DW_Parcelas_Frontend {
         
         // Botão para abrir (accordion ou popup)
         if ($display_type !== 'open') {
-            $button_text = __('Ver todas as parcelas', 'dw-parcelas-pix-woocommerce');
+            $button_text = __('Ver todas as parcelas', 'dw-parcelas-customizadas-woo');
             echo '<button type="button" class="dw-parcelas-toggle-btn dw-parcelas-btn-' . esc_attr($display_type) . '" data-target="' . esc_attr($table_id) . '" data-wrapper="' . esc_attr($wrapper_id) . '">';
             echo esc_html($button_text);
             echo '</button>';
@@ -353,8 +353,8 @@ class DW_Parcelas_Frontend {
         
         echo '<thead>';
         echo '<tr>';
-        echo '<th>' . __('Parcelas', 'dw-parcelas-pix-woocommerce') . '</th>';
-        echo '<th>' . __('Total', 'dw-parcelas-pix-woocommerce') . '</th>';
+        echo '<th>' . __('Parcelas', 'dw-parcelas-customizadas-woo') . '</th>';
+        echo '<th>' . __('Total', 'dw-parcelas-customizadas-woo') . '</th>';
         echo '</tr>';
         echo '</thead>';
         echo '<tbody>';
@@ -367,7 +367,7 @@ class DW_Parcelas_Frontend {
             echo '<td>';
             echo esc_html($installment['numero']) . 'x de ' . wc_price($installment['valor']);
             if (!$installment['has_interest']) {
-                echo ' <span class="dw-parcelas-label">' . __('sem juros', 'dw-parcelas-pix-woocommerce') . '</span>';
+                echo ' <span class="dw-parcelas-label">' . __('sem juros', 'dw-parcelas-customizadas-woo') . '</span>';
             }
             echo '</td>';
             
@@ -384,7 +384,7 @@ class DW_Parcelas_Frontend {
         
         // Botão fechar para popup
         if ($display_type === 'popup') {
-            echo '<button type="button" class="dw-parcelas-popup-close" data-target="' . esc_attr($wrapper_id) . '">' . __('Fechar', 'dw-parcelas-pix-woocommerce') . '</button>';
+            echo '<button type="button" class="dw-parcelas-popup-close" data-target="' . esc_attr($wrapper_id) . '">' . __('Fechar', 'dw-parcelas-customizadas-woo') . '</button>';
             echo '</div>'; // .dw-parcelas-popup-content-hidden
         } else {
             echo '</div>'; // .dw-parcelas-table-container
@@ -432,12 +432,12 @@ class DW_Parcelas_Frontend {
         
         // Localiza strings para JavaScript
         $strings = array(
-            'showText' => __('Ver todas as parcelas', 'dw-parcelas-pix-woocommerce'),
-            'hideText' => __('Ocultar parcelas', 'dw-parcelas-pix-woocommerce'),
-            'installmentsLabel' => __('Parcelas', 'dw-parcelas-pix-woocommerce'),
-            'totalLabel' => __('Total', 'dw-parcelas-pix-woocommerce'),
-            'withoutInterest' => __('sem juros', 'dw-parcelas-pix-woocommerce'),
-            'closeText' => __('Fechar', 'dw-parcelas-pix-woocommerce')
+            'showText' => __('Ver todas as parcelas', 'dw-parcelas-customizadas-woo'),
+            'hideText' => __('Ocultar parcelas', 'dw-parcelas-customizadas-woo'),
+            'installmentsLabel' => __('Parcelas', 'dw-parcelas-customizadas-woo'),
+            'totalLabel' => __('Total', 'dw-parcelas-customizadas-woo'),
+            'withoutInterest' => __('sem juros', 'dw-parcelas-customizadas-woo'),
+            'closeText' => __('Fechar', 'dw-parcelas-customizadas-woo')
         );
         ?>
         <script type="text/javascript">

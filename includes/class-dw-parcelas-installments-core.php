@@ -149,7 +149,7 @@ class DW_Parcelas_Installments_Core {
         $interest_text = $best['has_interest'] ? '' : ' sem juros';
         
         return sprintf(
-            __('ou %s em até %dx de %s%s', 'dw-parcelas-pix-woocommerce'),
+            __('ou %s em até %dx de %s%s', 'dw-parcelas-customizadas-woo'),
             $price_formatted,
             $installment_number,
             $installment_value,

@@ -203,8 +203,8 @@ O plugin é **100% compatível** com o HPOS do WooCommerce, que melhora signific
 ## Suporte
 
 Para suporte, reporte bugs ou solicite funcionalidades, visite:
-- [GitHub Issues](https://github.com/agenciadw/dw-parcelas-pix-woocommerce/issues)
-- [GitHub Repository](https://github.com/agenciadw/dw-parcelas-pix-woocommerce)
+- [GitHub Issues](https://github.com/agenciadw/dw-parcelas-customizadas-woo/issues)
+- [GitHub Repository](https://github.com/agenciadw/dw-parcelas-customizadas-woo)
 
 ## Changelog
 

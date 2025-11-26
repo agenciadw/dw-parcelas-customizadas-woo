@@ -1,14 +1,14 @@
 <?php
 /**
  * Plugin Name: DW Parcelas e Pix Customizadas WooCommerce
- * Plugin URI: https://github.com/agenciadw/dw-parcelas-pix-woocommerce
+ * Plugin URI: https://github.com/agenciadw/dw-parcelas-customizadas-woo
  * Description: Gerencie preços customizados para PIX e exiba parcelas de cartão de crédito de forma profissional no WooCommerce
  * Version: 0.1.0
  * Author: David William da Costa
  * Author URI: https://github.com/agenciadw
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: dw-parcelas-pix-woocommerce
+ * Text Domain: dw-parcelas-customizadas-woo
  * Domain Path: /languages
  * Requires at least: 5.0
  * Tested up to: 6.4
@@ -147,7 +147,7 @@ class DW_Parcelas_Pix_WooCommerce {
      */
     public function load_textdomain() {
         load_plugin_textdomain(
-            'dw-parcelas-pix-woocommerce',
+            'dw-parcelas-customizadas-woo',
             false,
             dirname(plugin_basename(__FILE__)) . '/languages/'
         );
@@ -158,9 +158,9 @@ class DW_Parcelas_Pix_WooCommerce {
      */
     public function woocommerce_missing_notice() {
         echo '<div class="error"><p><strong>' . 
-             esc_html__('DW Parcelas e Pix Customizadas WooCommerce', 'dw-parcelas-pix-woocommerce') . 
+             esc_html__('DW Parcelas e Pix Customizadas WooCommerce', 'dw-parcelas-customizadas-woo') . 
              '</strong> ' . 
-             esc_html__('requer que o WooCommerce esteja instalado e ativo.', 'dw-parcelas-pix-woocommerce') . 
+             esc_html__('requer que o WooCommerce esteja instalado e ativo.', 'dw-parcelas-customizadas-woo') . 
              '</p></div>';
     }
 
@@ -172,8 +172,8 @@ class DW_Parcelas_Pix_WooCommerce {
         if (!class_exists('WooCommerce')) {
             deactivate_plugins(plugin_basename(__FILE__));
             wp_die(
-                esc_html__('Este plugin requer o WooCommerce para funcionar.', 'dw-parcelas-pix-woocommerce'),
-                esc_html__('Plugin Desativado', 'dw-parcelas-pix-woocommerce'),
+                esc_html__('Este plugin requer o WooCommerce para funcionar.', 'dw-parcelas-customizadas-woo'),
+                esc_html__('Plugin Desativado', 'dw-parcelas-customizadas-woo'),
                 array('back_link' => true)
             );
         }
