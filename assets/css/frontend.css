@@ -1,0 +1,493 @@
+/**
+ * Estilos do frontend para DW Price to PIX
+ *
+ * @package DW_Price_To_Pix
+ */
+
+/* Container do preço PIX na página do produto */
+.dw-pix-price-info {
+    background: #e8f5e9;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border-left: 4px solid #4caf50;
+    /* box-shadow removido */
+}
+
+.dw-pix-price-text {
+    margin: 0;
+    font-size: 16px;
+    color: #2e7d32;
+    line-height: 1.4;
+}
+
+.dw-pix-price-amount {
+    font-weight: bold;
+    color: #1b5e20;
+    margin-left: 5px;
+    /* font-size será aplicado via inline style baseado nas configurações do painel */
+}
+
+.dw-pix-discount-percent {
+    color: #666;
+    font-size: 14px;
+    margin-left: 8px;
+    font-weight: 500;
+}
+
+/* Desconto no carrinho/checkout */
+.dw-pix-cart-discount {
+    color: #4caf50 !important;
+    font-weight: 600;
+    display: block;
+    margin-top: 5px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .dw-pix-price-info {
+        padding: 12px;
+        margin: 10px 0;
+    }
+    
+    .dw-pix-price-text {
+        font-size: 14px;
+    }
+    
+    /* font-size do preço será aplicado via inline style baseado nas configurações do painel */
+    
+    .dw-pix-discount-percent {
+        font-size: 12px;
+    }
+}
+
+/* Tema escuro */
+@media (prefers-color-scheme: dark) {
+    .dw-pix-price-info {
+        background: #1b5e20;
+        border-left-color: #66bb6a;
+    }
+    
+    .dw-pix-price-text {
+        color: #c8e6c9;
+    }
+    
+    .dw-pix-price-amount {
+        color: #a5d6a7;
+    }
+    
+    .dw-pix-discount-percent {
+        color: #bdbdbd;
+    }
+}
+
+/* Animação suave */
+.dw-pix-price-info {
+    transition: all 0.3s ease;
+}
+
+/* Hover removido do PIX */
+
+/* Preço PIX na galeria de produtos */
+.dw-pix-gallery-price {
+    margin-top: 5px;
+    font-size: 12px;
+    line-height: 1.4;
+    display: block;
+}
+
+.dw-pix-gallery-price strong {
+    font-weight: 600;
+}
+
+/* Ícone de imagem PIX */
+.dw-pix-icon-image {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+/* Ícone de cartão de crédito */
+.dw-parcelas-credit-card-icon-image {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.pix-icon {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.pix-icon img {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+/* Responsividade para galeria */
+@media (max-width: 768px) {
+    .dw-pix-gallery-price {
+        font-size: 11px;
+    }
+    
+    .dw-pix-icon-image {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+/* Galeria de parcelas */
+.dw-parcelas-gallery-wrapper .dw-parcelas-summary {
+    padding: 8px;
+    margin-bottom: 5px;
+}
+
+/* ============================================
+   ESTILOS PARA PARCELAS DE CARTÃO DE CRÉDITO
+   ============================================ */
+
+/* Container principal das parcelas */
+.dw-parcelas-container {
+    margin: 15px 0;
+}
+
+/* Resumo da melhor condição */
+.dw-parcelas-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #333;
+}
+
+.dw-parcelas-icon {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    /* Cor removida - usa cor original do SVG/ícone enviado */
+}
+
+.dw-parcelas-icon svg {
+    width: 20px;
+    height: 20px;
+    /* Cor não forçada - mantém cor original do SVG */
+}
+
+.dw-parcelas-text {
+    line-height: 1.5;
+}
+
+/* Wrapper da tabela */
+.dw-parcelas-table-wrapper {
+    margin-top: 10px;
+}
+
+/* Botão para expandir tabela */
+.dw-parcelas-toggle-btn {
+    background: transparent;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #666;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+    width: auto;
+    display: inline-block;
+}
+
+.dw-parcelas-toggle-btn:hover {
+    background: #f5f5f5;
+    border-color: #999;
+    color: #333;
+}
+
+.dw-parcelas-toggle-btn:focus {
+    outline: 2px solid #4caf50;
+    outline-offset: 2px;
+}
+
+.dw-parcelas-toggle-btn.dw-parcelas-active {
+    background: #4caf50;
+    border-color: #4caf50;
+    color: #fff;
+}
+
+.dw-parcelas-toggle-btn.dw-parcelas-active:hover {
+    background: #45a049;
+    border-color: #45a049;
+}
+
+/* Tabela de parcelas */
+.dw-parcelas-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background: #fff;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.dw-parcelas-table-hidden {
+    display: none !important;
+}
+
+.dw-parcelas-table-visible {
+    display: table !important;
+}
+
+.dw-parcelas-table-container {
+    margin-top: 10px;
+}
+
+.dw-parcelas-display-open .dw-parcelas-table-container {
+    display: block !important;
+}
+
+.dw-parcelas-display-open .dw-parcelas-table {
+    display: table !important;
+}
+
+.dw-parcelas-table thead {
+    background: #f8f9fa;
+}
+
+.dw-parcelas-table th {
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.dw-parcelas-table td {
+    padding: 10px 15px;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 14px;
+}
+
+.dw-parcelas-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Zebrado (striped) */
+.dw-parcelas-table tbody tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+.dw-parcelas-table tbody tr:hover {
+    background: #f0f0f0;
+}
+
+/* Parcelas sem juros em negrito */
+.dw-parcelas-table tbody tr.dw-parcelas-no-interest {
+    font-weight: 600;
+    background: #e8f5e9;
+}
+
+.dw-parcelas-table tbody tr.dw-parcelas-no-interest:hover {
+    background: #c8e6c9;
+}
+
+.dw-parcelas-table tbody tr.dw-parcelas-no-interest:nth-child(even) {
+    background: #e8f5e9;
+}
+
+/* Label "sem juros" */
+.dw-parcelas-label {
+    font-size: 12px;
+    color: #4caf50;
+    font-weight: 500;
+    margin-left: 5px;
+}
+
+/* Container para variações */
+.dw-parcelas-variation-container {
+    margin-top: 10px;
+}
+
+/* Animação de transição para accordion */
+.dw-parcelas-table {
+    transition: all 0.3s ease;
+}
+
+/* Responsividade para parcelas */
+@media (max-width: 768px) {
+    .dw-parcelas-summary {
+        font-size: 14px;
+        flex-wrap: wrap;
+    }
+    
+    .dw-parcelas-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .dw-parcelas-table {
+        font-size: 13px;
+    }
+    
+    .dw-parcelas-table th,
+    .dw-parcelas-table td {
+        padding: 8px 10px;
+    }
+    
+    .dw-parcelas-toggle-btn {
+        width: 100%;
+        padding: 10px;
+        font-size: 13px;
+    }
+    
+    .dw-parcelas-label {
+        font-size: 11px;
+    }
+}
+
+/* Popup Modal */
+.dw-parcelas-popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9998;
+    cursor: pointer;
+}
+
+.dw-parcelas-popup-content,
+.dw-parcelas-popup-content-active {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 8px;
+    padding: 30px;
+    max-width: 90%;
+    width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    z-index: 9999;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dw-parcelas-popup-content-active {
+    display: block !important;
+}
+
+.dw-parcelas-popup-content .dw-parcelas-table,
+.dw-parcelas-popup-content-active .dw-parcelas-table {
+    margin-top: 0;
+    display: table !important;
+}
+
+.dw-parcelas-popup-content table,
+.dw-parcelas-popup-content-active table {
+    display: table !important;
+    width: 100%;
+}
+
+.dw-parcelas-popup-close {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #2c3e50;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+    transition: background 0.3s ease;
+}
+
+.dw-parcelas-popup-close:hover {
+    background: #34495e;
+}
+
+/* Previne scroll do body quando popup está aberto */
+body.dw-parcelas-popup-open {
+    overflow: hidden;
+}
+
+/* Responsividade para popup */
+@media (max-width: 768px) {
+    .dw-parcelas-popup-content {
+        width: 95%;
+        padding: 20px;
+        max-height: 85vh;
+    }
+}
+
+/* Tema escuro para parcelas */
+@media (prefers-color-scheme: dark) {
+    .dw-parcelas-summary {
+        color: #e0e0e0;
+    }
+    
+    /* Cor do ícone removida - usa cor original do SVG/ícone enviado */
+    
+    .dw-parcelas-table {
+        background: #2c2c2c;
+        color: #e0e0e0;
+    }
+    
+    .dw-parcelas-table thead {
+        background: #333;
+    }
+    
+    .dw-parcelas-table th {
+        color: #fff;
+        border-bottom-color: #555;
+    }
+    
+    .dw-parcelas-table td {
+        border-bottom-color: #555;
+    }
+    
+    .dw-parcelas-table tbody tr:nth-child(even) {
+        background: #333;
+    }
+    
+    .dw-parcelas-table tbody tr:hover {
+        background: #444;
+    }
+    
+    .dw-parcelas-table tbody tr.dw-parcelas-no-interest {
+        background: #1b5e20;
+    }
+    
+    .dw-parcelas-toggle-btn {
+        background: #333;
+        border-color: #555;
+        color: #e0e0e0;
+    }
+    
+    .dw-parcelas-toggle-btn:hover {
+        background: #444;
+        border-color: #666;
+    }
+    
+    .dw-parcelas-popup-content {
+        background: #2c2c2c;
+        color: #e0e0e0;
+    }
+    
+    .dw-parcelas-popup-close {
+        background: #444;
+    }
+    
+    .dw-parcelas-popup-close:hover {
+        background: #555;
+    }
+}
+

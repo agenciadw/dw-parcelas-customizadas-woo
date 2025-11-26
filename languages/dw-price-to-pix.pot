@@ -1,0 +1,74 @@
+# Copyright (C) 2024 David William da Costa
+# This file is distributed under the same license as the DW Price to PIX package.
+msgid ""
+msgstr ""
+"Project-Id-Version: DW Price to PIX 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/agenciadw/dw-price-to-pix\n"
+"POT-Creation-Date: 2024-01-01 00:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2024-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: dw-price-to-pix.php:45
+msgid "DW Price to PIX"
+msgstr ""
+
+#: dw-price-to-pix.php:46
+msgid "requer que o WooCommerce esteja instalado e ativo."
+msgstr ""
+
+#: dw-price-to-pix.php:50
+msgid "Este plugin requer o WooCommerce para funcionar."
+msgstr ""
+
+#: dw-price-to-pix.php:51
+msgid "Plugin Desativado"
+msgstr ""
+
+#: includes/class-dw-pix-admin.php:50
+msgid "Preço no PIX (R$)"
+msgstr ""
+
+#: includes/class-dw-pix-admin.php:51
+msgid "Ex: 92.00"
+msgstr ""
+
+#: includes/class-dw-pix-admin.php:53
+msgid "Defina o preço especial para pagamento via PIX. Deixe vazio para usar o preço normal."
+msgstr ""
+
+#: includes/class-dw-pix-admin.php:75
+msgid "Preço PIX (R$)"
+msgstr ""
+
+#: includes/class-dw-pix-admin.php:77
+msgid "Preço especial para PIX nesta variação"
+msgstr ""
+
+#: includes/class-dw-pix-admin.php:120
+msgid "Preço PIX"
+msgstr ""
+
+#: includes/class-dw-pix-frontend.php:60
+msgid "💰 Pagando com PIX:"
+msgstr ""
+
+#: includes/class-dw-pix-frontend.php:61
+msgid "de desconto"
+msgstr ""
+
+#: includes/class-dw-pix-frontend.php:75
+msgid "🎉 Produtos com desconto especial para pagamento via PIX! Selecione PIX no checkout para aproveitar."
+msgstr ""
+
+#: includes/class-dw-pix-frontend.php:110
+msgid "Desconto PIX:"
+msgstr ""
+
+#: includes/class-dw-pix-security.php:30
+msgid "Você não tem permissão para editar este produto."
+msgstr ""
+

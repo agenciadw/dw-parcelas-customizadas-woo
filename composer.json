@@ -1,0 +1,55 @@
+{
+    "name": "agenciadw/dw-parcelas-pix-woocommerce",
+    "description": "Plugin completo para WooCommerce: preços especiais PIX e exibição profissional de parcelas de cartão de crédito. Compatível com Elementor.",
+    "version": "0.1.0",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "David William da Costa",
+            "email": "david@dwdigital.com.br",
+            "homepage": "https://github.com/agenciadw"
+        }
+    ],
+    "keywords": [
+        "wordpress",
+        "woocommerce",
+        "pix",
+        "payment",
+        "pricing",
+        "discount",
+        "installments",
+        "parcelas",
+        "credit-card",
+        "cartao-credito"
+    ],
+    "homepage": "https://github.com/agenciadw/dw-parcelas-pix-woocommerce",
+    "support": {
+        "issues": "https://github.com/agenciadw/dw-parcelas-pix-woocommerce/issues",
+        "source": "https://github.com/agenciadw/dw-parcelas-pix-woocommerce"
+    },
+    "require": {
+        "php": ">=7.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0",
+        "wp-coding-standards/wpcs": "^2.3",
+        "phpcompatibility/phpcompatibility-wp": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "DW_Parcelas_Pix\\": "includes/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "lint": "phpcs --standard=WordPress .",
+        "lint-fix": "phpcbf --standard=WordPress ."
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}
+
