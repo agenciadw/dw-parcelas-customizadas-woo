@@ -3,7 +3,7 @@
  * Plugin Name: DW Parcelas e Pix Customizadas WooCommerce
  * Plugin URI: https://github.com/agenciadw/dw-parcelas-customizadas-woo
  * Description: Gerencie preços customizados para PIX e exiba parcelas de cartão de crédito de forma profissional no WooCommerce
- * Version: 0.1.0
+ * Version: 0.2.0
  * Author: David William da Costa
  * Author URI: https://github.com/agenciadw
  * License: GPL v2 or later
@@ -30,7 +30,7 @@ if (!defined('ABSPATH')) {
 define('DW_PARCELAS_PLUGIN_FILE', __FILE__);
 define('DW_PARCELAS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('DW_PARCELAS_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('DW_PARCELAS_VERSION', '0.1.0');
+define('DW_PARCELAS_VERSION', '0.2.0');
 
 // Aliases para compatibilidade com código antigo do PIX
 if (!defined('DW_PIX_PLUGIN_FILE')) {
@@ -43,7 +43,7 @@ if (!defined('DW_PIX_PLUGIN_URL')) {
     define('DW_PIX_PLUGIN_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('DW_PIX_VERSION')) {
-    define('DW_PIX_VERSION', '0.1.0');
+    define('DW_PIX_VERSION', '0.2.0');
 }
 
 /**
@@ -110,6 +110,9 @@ class DW_Parcelas_Pix_WooCommerce {
         require_once DW_PARCELAS_PLUGIN_DIR . 'includes/class-dw-pix-frontend.php';
         require_once DW_PARCELAS_PLUGIN_DIR . 'includes/class-dw-parcelas-frontend.php';
         require_once DW_PARCELAS_PLUGIN_DIR . 'includes/class-dw-pix-settings.php';
+        
+        // Carrega integração com Elementor (será inicializada quando o Elementor carregar)
+        require_once DW_PARCELAS_PLUGIN_DIR . 'includes/class-dw-elementor-integration.php';
     }
 
     /**

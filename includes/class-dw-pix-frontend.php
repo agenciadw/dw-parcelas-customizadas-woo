@@ -59,6 +59,12 @@ class DW_Pix_Frontend {
         // Exibe preço PIX na galeria de produtos (depois das parcelas)
         add_action('woocommerce_after_shop_loop_item_title', array($this, 'display_pix_price_in_gallery'), 20);
         
+        // Hooks específicos do Woodmart
+        add_action('woodmart_after_shop_loop_item_title', array($this, 'display_pix_price_in_gallery'), 20);
+        add_action('woodmart_product_loop_after_price', array($this, 'display_pix_price_in_gallery'), 20);
+        add_action('xts_after_shop_loop_item_title', array($this, 'display_pix_price_in_gallery'), 20);
+        add_filter('woodmart_product_loop_after_price', array($this, 'display_pix_price_in_gallery'), 20);
+        
         // Adiciona aviso no carrinho
         add_action('woocommerce_before_cart', array($this, 'show_pix_notice'));
         add_action('woocommerce_before_checkout_form', array($this, 'show_pix_notice'));
@@ -68,6 +74,10 @@ class DW_Pix_Frontend {
         
         // Adiciona estilos CSS e scripts
         add_action('wp_enqueue_scripts', array($this, 'enqueue_assets'));
+        
+        // Endpoint AJAX para obter preço PIX na grade do Elementor
+        add_action('wp_ajax_dw_get_pix_price_for_grid', array($this, 'ajax_get_pix_price_for_grid'));
+        add_action('wp_ajax_nopriv_dw_get_pix_price_for_grid', array($this, 'ajax_get_pix_price_for_grid'));
     }
 
     /**
@@ -128,20 +138,10 @@ class DW_Pix_Frontend {
         $parcelas_summary_priority = $parcelas_priorities['summary'];
         $parcelas_table_priority = $parcelas_priorities['table'];
         
-        // PIX sempre aparece relativo à tabela (último elemento das parcelas)
-        // Se "acima das parcelas": antes do resumo
-        // Se "abaixo das parcelas": depois da tabela
-        switch ($pix_position) {
-            case 'before_installments':
-                // Acima das parcelas: antes do resumo
-                return max(5, $parcelas_summary_priority - 1);
-            
-            case 'after_installments':
-            default:
-                // Abaixo das parcelas: depois da tabela
-                // Garante que seja pelo menos 2 pontos depois da tabela para aparecer depois
-                return min(39, $parcelas_table_priority + 2);
-        }
+        // Nova lógica: PIX sempre entre resumo e tabela
+        // Ordem correta: Resumo → PIX → Tabela
+        // PIX fica entre o resumo (summary) e a tabela (table)
+        return $parcelas_summary_priority + 1; // Entre resumo e tabela
     }
 
     /**
@@ -251,37 +251,72 @@ class DW_Pix_Frontend {
             // Só exibe se houver desconto válido
             if ($discount['amount'] > 0 && $discount['percentage'] > 0) {
                 $settings = $this->get_design_settings();
-                // Gera CSS a partir dos campos visuais (galeria)
-                $generated_css = $this->generate_visual_css($settings, 'gallery');
                 
-                // Estilos base (sem margin-top fixo, deixa o CSS gerado controlar)
-                $font_size = isset($settings['font_size']) ? $settings['font_size'] : '12';
-                $base_styles = 'font-size: ' . esc_attr($font_size) . 'px; color: ' . esc_attr($settings['price_color']) . ';';
+                // Permite que o Elementor modifique as configurações
+                $settings = apply_filters('dw_pix_gallery_settings', $settings, $product);
                 
-                // Combina estilos base com CSS gerado (CSS gerado vem depois para ter prioridade)
-                $combined_style = $base_styles;
-                if (!empty($generated_css)) {
-                    $combined_style .= ' ' . $generated_css;
+                // Verifica se o Elementor desabilitou a exibição
+                if (isset($settings['dw_pix_show_discount']) && $settings['dw_pix_show_discount'] === 'no') {
+                    return;
                 }
                 
-                // Se não há margin configurada, aplica margin-top padrão apenas se não houver margin no CSS gerado
-                if (empty($generated_css) || strpos($generated_css, 'margin') === false) {
-                    $combined_style .= ' margin-top: 5px;';
-                }
+                // Adiciona classes adicionais do Elementor se disponíveis
+                $extra_classes = isset($settings['dw_pix_elementor_class']) ? ' ' . esc_attr($settings['dw_pix_elementor_class']) : '';
+                $using_elementor = isset($settings['using_elementor']) && $settings['using_elementor'] === true;
                 
-                $custom_style = ' style="' . esc_attr($combined_style) . '"';
+                // Monta estilos inline APENAS se NÃO estiver usando Elementor
+                $custom_style = '';
+                $price_style = '';
+                $text_style = '';
+                $discount_style = '';
+                
+                if (!$using_elementor) {
+                    // Gera CSS a partir dos campos visuais (galeria)
+                    $generated_css = $this->generate_visual_css($settings, 'gallery');
+                    
+                    // Estilos base
+                    $font_size = isset($settings['font_size']) ? $settings['font_size'] : '12';
+                    $base_styles = 'font-size: ' . esc_attr($font_size) . 'px;';
+                    
+                    if (!empty($settings['price_color'])) {
+                        $base_styles .= ' color: ' . esc_attr($settings['price_color']) . ';';
+                    }
+                    
+                    // Combina estilos base com CSS gerado
+                    $combined_style = $base_styles;
+                    if (!empty($generated_css)) {
+                        $combined_style .= ' ' . $generated_css;
+                    }
+                    
+                    // Margin padrão
+                    if (empty($generated_css) || strpos($generated_css, 'margin') === false) {
+                        $combined_style .= ' margin-top: 5px;';
+                    }
+                    
+                    $custom_style = ' style="' . esc_attr($combined_style) . '"';
+                    
+                    // Estilo para o preço
+                    $price_style = ' style="color: ' . esc_attr($settings['price_color']) . '; font-size: ' . esc_attr($font_size) . 'px;"';
+                    
+                    // Estilo para o texto principal
+                    if (!empty($settings['text_color'])) {
+                        $text_style = ' style="color: ' . esc_attr($settings['text_color']) . ';"';
+                    }
+                    
+                    // Cor do texto de desconto
+                    $discount_text_color = isset($settings['discount_text_color']) ? $settings['discount_text_color'] : '#666';
+                    $discount_style = ' style="color: ' . esc_attr($discount_text_color) . ';"';
+                }
                 
                 // Verifica se deve exibir o ícone na galeria
                 $show_icon = isset($settings['show_pix_icon_gallery']) ? ($settings['show_pix_icon_gallery'] === '1' || $settings['show_pix_icon_gallery'] === 1) : true;
                 $icon_html = $show_icon ? $this->get_pix_icon_html($settings, true) . ' ' : '';
                 
-                // Estilo para o preço na galeria (usa o mesmo font_size)
-                $price_style = 'color: ' . esc_attr($settings['price_color']) . '; font-size: ' . esc_attr($font_size) . 'px;';
-                
-                echo '<div class="dw-pix-price-info-gallery"' . $custom_style . '>';
-                echo $icon_html . esc_html($settings['custom_text']) . ' ';
-                echo '<span style="' . $price_style . '">' . wc_price($pix_price) . '</span>';
-                echo ' <span style="color: #666;">(' . number_format($discount['percentage'], 0) . '% ' . esc_html($settings['discount_text']) . ')</span>';
+                echo '<div class="dw-pix-price-info-gallery dw-pix-price-info' . $extra_classes . '"' . $custom_style . '>';
+                echo $icon_html;
+                echo '<span class="dw-pix-price-text"' . $text_style . '>' . esc_html($settings['custom_text']) . ' </span>';
+                echo '<span class="dw-pix-price-amount"' . $price_style . '>' . wc_price($pix_price) . '</span>';
+                echo ' <span class="dw-pix-discount-percent"' . $discount_style . '>(' . number_format($discount['percentage'], 0) . '% ' . esc_html($settings['discount_text']) . ')</span>';
                 echo '</div>';
             }
         }
@@ -326,7 +361,7 @@ class DW_Pix_Frontend {
         echo '<p class="dw-pix-price-text" style="' . esc_attr($styles['text']) . '">';
         echo '<span class="pix-icon">' . $this->get_pix_icon_html($settings) . '</span> ' . esc_html($settings['custom_text']) . ' ';
         echo '<span class="dw-pix-price-amount" style="' . esc_attr($styles['price']) . '">' . wc_price($pix_price) . '</span>';
-        echo '<span class="dw-pix-discount-percent">(' . esc_html($discount_percent) . '% ' . esc_html($settings['discount_text']) . ')</span>';
+        echo '<span class="dw-pix-discount-percent" style="' . esc_attr($styles['discount']) . '">(' . esc_html($discount_percent) . '% ' . esc_html($settings['discount_text']) . ')</span>';
         echo '</p>';
         echo '</div>';
     }
@@ -512,6 +547,7 @@ class DW_Pix_Frontend {
             'border_color' => '#4caf50',
             'text_color' => '#2e7d32',
             'price_color' => '#1b5e20',
+            'discount_text_color' => '#666',
             'pix_icon_custom' => $default_icon_url,
             'custom_text' => 'Pagando com PIX:',
             'border_style' => 'solid',
@@ -638,6 +674,9 @@ class DW_Pix_Frontend {
             $border_css = sprintf('border-left: 4px %s %s;', $settings['border_style'], $border_color);
         }
         
+        // Cor do texto de desconto
+        $discount_text_color = isset($settings['discount_text_color']) ? $settings['discount_text_color'] : '#666';
+        
         return array(
             'container' => sprintf(
                 'background-color: %s; %s',
@@ -653,6 +692,10 @@ class DW_Pix_Frontend {
                 'color: %s; font-size: %spx;',
                 $settings['price_color'],
                 isset($settings['font_size']) ? $settings['font_size'] : '16'
+            ),
+            'discount' => sprintf(
+                'color: %s;',
+                $discount_text_color
             )
         );
     }
@@ -681,6 +724,198 @@ class DW_Pix_Frontend {
                 true
             );
         }
+    }
+
+    /**
+     * Endpoint AJAX para obter preço PIX na grade do Elementor
+     */
+    public function ajax_get_pix_price_for_grid() {
+        // Verifica nonce (mais permissivo para evitar bloqueios de firewall)
+        $nonce = isset($_POST['nonce']) ? sanitize_text_field($_POST['nonce']) : '';
+        
+        // Validação de nonce mais permissiva
+        if (!empty($nonce) && !wp_verify_nonce($nonce, 'dw_pix_grid_nonce')) {
+            // Se o nonce foi enviado mas é inválido, retorna erro
+            wp_send_json_error(array('message' => __('Erro de segurança.', 'dw-price-to-pix')), 403);
+            return;
+        }
+
+        // Obtém ID ou slug do produto
+        $product_identifier = isset($_POST['product_id']) ? sanitize_text_field($_POST['product_id']) : '';
+        
+        if (!$product_identifier) {
+            wp_send_json_error(array('message' => __('ID do produto não fornecido.', 'dw-price-to-pix')), 400);
+            return;
+        }
+
+        // Tenta obter produto por ID primeiro
+        $product_id = intval($product_identifier);
+        $product = null;
+        
+        if ($product_id > 0) {
+            $product = wc_get_product($product_id);
+        }
+        
+        // Se não encontrou por ID, tenta por slug
+        if (!$product && !is_numeric($product_identifier)) {
+            // Busca produto por slug
+            $args = array(
+                'name' => $product_identifier,
+                'post_type' => 'product',
+                'post_status' => 'publish',
+                'numberposts' => 1
+            );
+            $products = get_posts($args);
+            
+            if (!empty($products)) {
+                $product = wc_get_product($products[0]->ID);
+            }
+        }
+        
+        if (!$product) {
+            // Retorna sucesso vazio ao invés de erro (evita poluir console)
+            wp_send_json_success(array('html' => ''));
+            return;
+        }
+
+        // Obtém preço PIX
+        $pix_price = $this->core->get_pix_price($product);
+        
+        if (!$pix_price || $pix_price <= 0) {
+            // Retorna sucesso vazio ao invés de erro
+            wp_send_json_success(array('html' => ''));
+            return;
+        }
+
+        // Obtém preço regular
+        $regular_price = $product->get_regular_price();
+        
+        if (!$regular_price || $regular_price <= 0) {
+            $regular_price = $product->get_price();
+        }
+
+        // Calcula desconto
+        $discount = $this->core->calculate_pix_discount($regular_price, $pix_price);
+        
+        // Obtém configurações de design
+        $settings = $this->get_design_settings();
+        
+        // Renderiza HTML do preço PIX
+        $html = $this->render_pix_price_for_grid($pix_price, $discount, $settings);
+
+        wp_send_json_success(array('html' => $html));
+    }
+
+    /**
+     * Renderiza preço PIX para grade de produtos
+     *
+     * @param float $pix_price Preço PIX
+     * @param array $discount Dados do desconto
+     * @param array $settings Configurações de design
+     * @return string
+     */
+    private function render_pix_price_for_grid($pix_price, $discount, $settings) {
+        $discount_percent = number_format($discount['percentage'], 0);
+        
+        // Estilos inline baseados nas configurações
+        $styles = array();
+        
+        // Cor de fundo
+        if (!empty($settings['background_color'])) {
+            $styles[] = 'background-color: ' . esc_attr($settings['background_color']) . ';';
+        }
+        
+        // Cor do texto
+        $text_color = !empty($settings['text_color']) ? $settings['text_color'] : '#2e7d32';
+        $styles[] = 'color: ' . esc_attr($text_color) . ';';
+        
+        // Padding
+        if (!empty($settings['pix_padding_gallery'])) {
+            $padding = $settings['pix_padding_gallery'];
+            if (is_array($padding)) {
+                $styles[] = sprintf(
+                    'padding: %s %s %s %s;',
+                    esc_attr($padding['top'] ?? '0'),
+                    esc_attr($padding['right'] ?? '0'),
+                    esc_attr($padding['bottom'] ?? '0'),
+                    esc_attr($padding['left'] ?? '0')
+                );
+            }
+        }
+        
+        // Margin
+        if (!empty($settings['pix_margin_gallery'])) {
+            $margin = $settings['pix_margin_gallery'];
+            if (is_array($margin)) {
+                $styles[] = sprintf(
+                    'margin: %s %s %s %s;',
+                    esc_attr($margin['top'] ?? '0'),
+                    esc_attr($margin['right'] ?? '0'),
+                    esc_attr($margin['bottom'] ?? '0'),
+                    esc_attr($margin['left'] ?? '0')
+                );
+            }
+        }
+        
+        // Border radius
+        if (!empty($settings['pix_border_radius'])) {
+            $border_radius = $settings['pix_border_radius'];
+            if (is_array($border_radius)) {
+                $styles[] = sprintf(
+                    'border-radius: %s %s %s %s;',
+                    esc_attr($border_radius['top'] ?? '0'),
+                    esc_attr($border_radius['right'] ?? '0'),
+                    esc_attr($border_radius['bottom'] ?? '0'),
+                    esc_attr($border_radius['left'] ?? '0')
+                );
+            }
+        }
+        
+        // Border
+        if (!empty($settings['border_color']) && (!isset($settings['hide_border']) || $settings['hide_border'] !== '1')) {
+            $border_style = !empty($settings['border_style']) ? $settings['border_style'] : 'solid';
+            $styles[] = 'border-left: 4px ' . esc_attr($border_style) . ' ' . esc_attr($settings['border_color']) . ';';
+        }
+        
+        $container_style = !empty($styles) ? ' style="' . implode(' ', $styles) . '"' : '';
+        
+        // Cor do preço
+        $price_color = !empty($settings['price_color']) ? $settings['price_color'] : '#1b5e20';
+        $price_style = 'color: ' . esc_attr($price_color) . ';';
+        
+        // Cor do desconto
+        $discount_color = !empty($settings['discount_text_color']) ? $settings['discount_text_color'] : '#666';
+        $discount_style = 'color: ' . esc_attr($discount_color) . ';';
+        
+        // Ícone PIX
+        $icon_html = '';
+        if (!empty($settings['pix_icon_custom_gallery']) || !empty($settings['pix_icon_custom'])) {
+            $icon_url = !empty($settings['pix_icon_custom_gallery']) ? $settings['pix_icon_custom_gallery'] : $settings['pix_icon_custom'];
+            $icon_html = '<img src="' . esc_url($icon_url) . '" alt="PIX" style="width: 20px; height: 20px; vertical-align: middle; display: inline-block; margin-right: 5px;" />';
+        }
+        
+        // Texto personalizado
+        $custom_text = !empty($settings['custom_text']) ? $settings['custom_text'] : 'Pagando com PIX:';
+        $discount_text = !empty($settings['discount_text']) ? $settings['discount_text'] : 'de desconto';
+        
+        // Tamanho da fonte
+        $font_size = !empty($settings['font_size']) ? $settings['font_size'] : '16';
+        $text_style = 'font-size: ' . esc_attr($font_size) . 'px;';
+        
+        ob_start();
+        ?>
+        <div class="dw-pix-price-info dw-pix-price-info-gallery"<?php echo $container_style; ?>>
+            <p class="dw-pix-price-text" style="<?php echo esc_attr($text_style . ' color: ' . $text_color); ?>">
+                <?php if ($icon_html): ?>
+                    <span class="pix-icon"><?php echo $icon_html; ?></span>
+                <?php endif; ?>
+                <?php echo esc_html($custom_text); ?> 
+                <span class="dw-pix-price-amount" style="<?php echo esc_attr($price_style . ' font-size: ' . $font_size . 'px;'); ?>"><?php echo wc_price($pix_price); ?></span>
+                <span class="dw-pix-discount-percent" style="<?php echo esc_attr($discount_style); ?>">(<?php echo esc_html($discount_percent); ?>% <?php echo esc_html($discount_text); ?>)</span>
+            </p>
+        </div>
+        <?php
+        return ob_get_clean();
     }
 }
 

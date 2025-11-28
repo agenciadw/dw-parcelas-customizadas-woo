@@ -54,6 +54,7 @@ class DW_Pix_Settings {
         register_setting('dw_pix_settings', 'dw_pix_global_settings', array($this, 'sanitize_global_settings'));
         register_setting('dw_pix_settings', 'dw_pix_installments_settings', array($this, 'sanitize_installments_settings'));
         register_setting('dw_pix_settings', 'dw_pix_installments_design_settings', array($this, 'sanitize_installments_design_settings'));
+        register_setting('dw_pix_settings', 'dw_pix_table_design_settings', array($this, 'sanitize_table_design_settings'));
         
         // Seção de configurações globais
         add_settings_section(
@@ -139,6 +140,15 @@ class DW_Pix_Settings {
             'price_color',
             __('Cor do Preço', 'dw-price-to-pix'),
             array($this, 'price_color_callback'),
+            'dw_pix_settings',
+            'dw_pix_design_section'
+        );
+
+        // Campo de cor do texto de desconto
+        add_settings_field(
+            'discount_text_color',
+            __('Cor do Texto de Desconto', 'dw-price-to-pix'),
+            array($this, 'discount_text_color_callback'),
             'dw_pix_settings',
             'dw_pix_design_section'
         );
@@ -230,6 +240,15 @@ class DW_Pix_Settings {
             'dw_pix_design_section'
         );
 
+        // Campo de texto de desconto
+        add_settings_field(
+            'discount_text',
+            __('Texto de Desconto', 'dw-price-to-pix'),
+            array($this, 'discount_text_callback'),
+            'dw_pix_settings',
+            'dw_pix_design_section'
+        );
+
         // Campo de estilo da borda
         add_settings_field(
             'border_style',
@@ -244,15 +263,6 @@ class DW_Pix_Settings {
             'font_size',
             __('Tamanho da Fonte', 'dw-price-to-pix'),
             array($this, 'font_size_callback'),
-            'dw_pix_settings',
-            'dw_pix_design_section'
-        );
-
-        // Campo de texto de desconto
-        add_settings_field(
-            'discount_text',
-            __('Texto de Desconto', 'dw-price-to-pix'),
-            array($this, 'discount_text_callback'),
             'dw_pix_settings',
             'dw_pix_design_section'
         );
@@ -530,6 +540,122 @@ class DW_Pix_Settings {
             'dw_pix_settings',
             'dw_pix_installments_section'
         );
+        
+        // Seção de design da tabela de parcelas
+        add_settings_section(
+            'dw_pix_table_design_section',
+            __('Configurações de Design - Tabela de Parcelas', 'dw-price-to-pix'),
+            array($this, 'table_design_section_callback'),
+            'dw_pix_settings'
+        );
+        
+        // Campo de cor de fundo da tabela
+        add_settings_field(
+            'table_background_color',
+            __('Cor de Fundo da Tabela', 'dw-price-to-pix'),
+            array($this, 'table_background_color_callback'),
+            'dw_pix_settings',
+            'dw_pix_table_design_section'
+        );
+        
+        // Campo de cor do cabeçalho
+        add_settings_field(
+            'table_header_background_color',
+            __('Cor de Fundo do Cabeçalho', 'dw-price-to-pix'),
+            array($this, 'table_header_background_color_callback'),
+            'dw_pix_settings',
+            'dw_pix_table_design_section'
+        );
+        
+        // Campo de cor do texto do cabeçalho
+        add_settings_field(
+            'table_header_text_color',
+            __('Cor do Texto do Cabeçalho', 'dw-price-to-pix'),
+            array($this, 'table_header_text_color_callback'),
+            'dw_pix_settings',
+            'dw_pix_table_design_section'
+        );
+        
+        // Campo de cor do texto das células
+        add_settings_field(
+            'table_cell_text_color',
+            __('Cor do Texto das Células', 'dw-price-to-pix'),
+            array($this, 'table_cell_text_color_callback'),
+            'dw_pix_settings',
+            'dw_pix_table_design_section'
+        );
+        
+        // Campo de cor das linhas pares (zebrado)
+        add_settings_field(
+            'table_row_even_color',
+            __('Cor das Linhas Pares (Zebrado)', 'dw-price-to-pix'),
+            array($this, 'table_row_even_color_callback'),
+            'dw_pix_settings',
+            'dw_pix_table_design_section'
+        );
+        
+        // Campo de cor do hover
+        add_settings_field(
+            'table_row_hover_color',
+            __('Cor do Hover (Passar Mouse)', 'dw-price-to-pix'),
+            array($this, 'table_row_hover_color_callback'),
+            'dw_pix_settings',
+            'dw_pix_table_design_section'
+        );
+        
+        // Campo de cor da linha PIX
+        add_settings_field(
+            'table_pix_row_color',
+            __('Cor da Linha PIX', 'dw-price-to-pix'),
+            array($this, 'table_pix_row_color_callback'),
+            'dw_pix_settings',
+            'dw_pix_table_design_section'
+        );
+        
+        // Campo de cor do texto da linha PIX
+        add_settings_field(
+            'table_pix_text_color',
+            __('Cor do Texto da Linha PIX', 'dw-price-to-pix'),
+            array($this, 'table_pix_text_color_callback'),
+            'dw_pix_settings',
+            'dw_pix_table_design_section'
+        );
+        
+        // Campo de cor das linhas sem juros
+        add_settings_field(
+            'table_no_interest_row_color',
+            __('Cor das Linhas Sem Juros', 'dw-price-to-pix'),
+            array($this, 'table_no_interest_row_color_callback'),
+            'dw_pix_settings',
+            'dw_pix_table_design_section'
+        );
+        
+        // Campo de cor do texto sem juros
+        add_settings_field(
+            'table_no_interest_text_color',
+            __('Cor do Texto Sem Juros', 'dw-price-to-pix'),
+            array($this, 'table_no_interest_text_color_callback'),
+            'dw_pix_settings',
+            'dw_pix_table_design_section'
+        );
+        
+        // Campo de cor das bordas
+        add_settings_field(
+            'table_border_color',
+            __('Cor das Bordas', 'dw-price-to-pix'),
+            array($this, 'table_border_color_callback'),
+            'dw_pix_settings',
+            'dw_pix_table_design_section'
+        );
+        
+        // Campo de espaçamento interno (padding)
+        add_settings_field(
+            'table_cell_padding',
+            __('Espaçamento Interno das Células', 'dw-price-to-pix'),
+            array($this, 'table_cell_padding_callback'),
+            'dw_pix_settings',
+            'dw_pix_table_design_section'
+        );
     }
 
     /**
@@ -708,6 +834,16 @@ class DW_Pix_Settings {
         $value = isset($settings['price_color']) ? $settings['price_color'] : '#1b5e20';
         echo '<input type="color" name="dw_pix_design_settings[price_color]" value="' . esc_attr($value) . '" />';
         echo '<p class="description">' . __('Cor do preço PIX', 'dw-price-to-pix') . '</p>';
+    }
+
+    /**
+     * Callback do campo cor do texto de desconto
+     */
+    public function discount_text_color_callback() {
+        $settings = get_option('dw_pix_design_settings', array());
+        $value = isset($settings['discount_text_color']) ? $settings['discount_text_color'] : '#666';
+        echo '<input type="color" name="dw_pix_design_settings[discount_text_color]" value="' . esc_attr($value) . '" />';
+        echo '<p class="description">' . __('Cor do texto de desconto (ex: 10% de desconto)', 'dw-price-to-pix') . '</p>';
     }
 
     /**
@@ -1053,6 +1189,9 @@ class DW_Pix_Settings {
                 <a href="?page=dw-pix-settings&tab=design-parcelas" class="nav-tab <?php echo $active_tab == 'design-parcelas' ? 'nav-tab-active' : ''; ?>">
                     <span class="dashicons dashicons-art"></span> <?php _e('Design Parcelas', 'dw-price-to-pix'); ?>
                 </a>
+                <a href="?page=dw-pix-settings&tab=design-tabela" class="nav-tab <?php echo $active_tab == 'design-tabela' ? 'nav-tab-active' : ''; ?>">
+                    <span class="dashicons dashicons-layout"></span> <?php _e('Design da Tabela', 'dw-price-to-pix'); ?>
+                </a>
                 <a href="?page=dw-pix-settings&tab=avancado" class="nav-tab <?php echo $active_tab == 'avancado' ? 'nav-tab-active' : ''; ?>">
                     <span class="dashicons dashicons-admin-tools"></span> <?php _e('Avançado', 'dw-price-to-pix'); ?>
                 </a>
@@ -1073,6 +1212,9 @@ class DW_Pix_Settings {
                         break;
                     case 'design-parcelas':
                         $this->render_design_parcelas_tab();
+                        break;
+                    case 'design-tabela':
+                        $this->render_design_tabela_tab();
                         break;
                     case 'avancado':
                         $this->render_avancado_tab();
@@ -1246,6 +1388,47 @@ class DW_Pix_Settings {
             
             <div class="dw-pix-admin-sidebar">
                 <?php $this->render_parcelas_preview(); ?>
+            </div>
+        </div>
+        <?php
+    }
+    
+    /**
+     * Renderiza aba Design da Tabela
+     */
+    private function render_design_tabela_tab() {
+        ?>
+        <div class="dw-pix-tab-content">
+            <div class="dw-pix-admin-main">
+                <form method="post" action="options.php">
+                    <?php
+                    settings_fields('dw_pix_settings');
+                    ?>
+                    
+                    <!-- Design da Tabela -->
+                    <table class="form-table" role="presentation">
+                        <?php
+                        global $wp_settings_sections;
+                        
+                        if (isset($wp_settings_sections['dw_pix_settings']['dw_pix_table_design_section'])) {
+                            echo '<tr><td colspan="2">';
+                            echo '<h2>' . esc_html($wp_settings_sections['dw_pix_settings']['dw_pix_table_design_section']['title']) . '</h2>';
+                            if ($wp_settings_sections['dw_pix_settings']['dw_pix_table_design_section']['callback']) {
+                                call_user_func($wp_settings_sections['dw_pix_settings']['dw_pix_table_design_section']['callback']);
+                            }
+                            echo '</td></tr>';
+                            
+                            do_settings_fields('dw_pix_settings', 'dw_pix_table_design_section');
+                        }
+                        ?>
+                    </table>
+                    
+                    <?php submit_button(__('Salvar Configurações de Design da Tabela', 'dw-price-to-pix'), 'primary large'); ?>
+                </form>
+            </div>
+            
+            <div class="dw-pix-admin-sidebar">
+                <?php $this->render_table_preview(); ?>
             </div>
         </div>
         <?php
@@ -1490,7 +1673,7 @@ class DW_Pix_Settings {
         $sanitized = wp_parse_args($input, $existing);
         
         // Sanitiza valores
-        $allowed_keys = array('background_color', 'border_color', 'hide_border', 'text_color', 'price_color', 'pix_icon_custom', 'pix_icon_custom_gallery', 'show_pix_icon_gallery', 'custom_text', 'border_style', 'font_size', 'discount_text', 'pix_margin_product', 'pix_padding_product', 'pix_margin_gallery', 'pix_padding_gallery', 'pix_border_radius', 'allow_transparent_background_pix');
+        $allowed_keys = array('background_color', 'border_color', 'hide_border', 'text_color', 'price_color', 'discount_text_color', 'pix_icon_custom', 'pix_icon_custom_gallery', 'show_pix_icon_gallery', 'custom_text', 'border_style', 'font_size', 'discount_text', 'pix_margin_product', 'pix_padding_product', 'pix_margin_gallery', 'pix_padding_gallery', 'pix_border_radius', 'allow_transparent_background_pix');
         foreach ($sanitized as $key => $value) {
             if (in_array($key, $allowed_keys)) {
                 if (in_array($key, array('pix_margin_product', 'pix_padding_product', 'pix_margin_gallery', 'pix_padding_gallery'))) {
@@ -1793,6 +1976,7 @@ class DW_Pix_Settings {
             'hide_border' => '0',
             'text_color' => '#2e7d32',
             'price_color' => '#1b5e20',
+            'discount_text_color' => '#666',
             'pix_icon_custom' => '',
             'show_pix_icon_gallery' => '1',
             'custom_text' => 'Pagando com PIX:',
@@ -2577,5 +2761,298 @@ class DW_Pix_Settings {
         }
         
         return $settings;
+    }
+    
+    /**
+     * Callback da seção de design da tabela
+     */
+    public function table_design_section_callback() {
+        echo '<p>' . __('Configure as cores e estilos da tabela de parcelas. Estas configurações afetam apenas a tabela expandida, não o resumo.', 'dw-price-to-pix') . '</p>';
+    }
+    
+    /**
+     * Callback do campo cor de fundo da tabela
+     */
+    public function table_background_color_callback() {
+        $settings = get_option('dw_pix_table_design_settings', array());
+        $value = isset($settings['table_background_color']) ? $settings['table_background_color'] : '#fafafa';
+        
+        echo '<input type="color" name="dw_pix_table_design_settings[table_background_color]" value="' . esc_attr($value) . '" />';
+        echo '<p class="description">' . __('Cor de fundo geral da tabela.', 'dw-price-to-pix') . '</p>';
+    }
+    
+    /**
+     * Callback do campo cor de fundo do cabeçalho
+     */
+    public function table_header_background_color_callback() {
+        $settings = get_option('dw_pix_table_design_settings', array());
+        $value = isset($settings['table_header_background_color']) ? $settings['table_header_background_color'] : '#f0f4f8';
+        
+        echo '<input type="color" name="dw_pix_table_design_settings[table_header_background_color]" value="' . esc_attr($value) . '" />';
+        echo '<p class="description">' . __('Cor de fundo do cabeçalho da tabela (primeira linha com os títulos).', 'dw-price-to-pix') . '</p>';
+    }
+    
+    /**
+     * Callback do campo cor do texto do cabeçalho
+     */
+    public function table_header_text_color_callback() {
+        $settings = get_option('dw_pix_table_design_settings', array());
+        $value = isset($settings['table_header_text_color']) ? $settings['table_header_text_color'] : '#4a658a';
+        
+        echo '<input type="color" name="dw_pix_table_design_settings[table_header_text_color]" value="' . esc_attr($value) . '" />';
+        echo '<p class="description">' . __('Cor do texto do cabeçalho.', 'dw-price-to-pix') . '</p>';
+    }
+    
+    /**
+     * Callback do campo cor do texto das células
+     */
+    public function table_cell_text_color_callback() {
+        $settings = get_option('dw_pix_table_design_settings', array());
+        $value = isset($settings['table_cell_text_color']) ? $settings['table_cell_text_color'] : '#333333';
+        
+        echo '<input type="color" name="dw_pix_table_design_settings[table_cell_text_color]" value="' . esc_attr($value) . '" />';
+        echo '<p class="description">' . __('Cor do texto das células da tabela.', 'dw-price-to-pix') . '</p>';
+    }
+    
+    /**
+     * Callback do campo cor das linhas pares
+     */
+    public function table_row_even_color_callback() {
+        $settings = get_option('dw_pix_table_design_settings', array());
+        $value = isset($settings['table_row_even_color']) ? $settings['table_row_even_color'] : '#f8f9fa';
+        
+        echo '<input type="color" name="dw_pix_table_design_settings[table_row_even_color]" value="' . esc_attr($value) . '" />';
+        echo '<p class="description">' . __('Cor de fundo das linhas pares (efeito zebrado).', 'dw-price-to-pix') . '</p>';
+    }
+    
+    /**
+     * Callback do campo cor do hover
+     */
+    public function table_row_hover_color_callback() {
+        $settings = get_option('dw_pix_table_design_settings', array());
+        $value = isset($settings['table_row_hover_color']) ? $settings['table_row_hover_color'] : '#eef2f7';
+        
+        echo '<input type="color" name="dw_pix_table_design_settings[table_row_hover_color]" value="' . esc_attr($value) . '" />';
+        echo '<p class="description">' . __('Cor quando o mouse passa sobre uma linha.', 'dw-price-to-pix') . '</p>';
+    }
+    
+    /**
+     * Callback do campo cor da linha PIX
+     */
+    public function table_pix_row_color_callback() {
+        $settings = get_option('dw_pix_table_design_settings', array());
+        $value = isset($settings['table_pix_row_color']) ? $settings['table_pix_row_color'] : '#fff3e0';
+        
+        echo '<input type="color" name="dw_pix_table_design_settings[table_pix_row_color]" value="' . esc_attr($value) . '" />';
+        echo '<p class="description">' . __('Cor de fundo da linha que exibe a opção PIX.', 'dw-price-to-pix') . '</p>';
+    }
+    
+    /**
+     * Callback do campo cor do texto da linha PIX
+     */
+    public function table_pix_text_color_callback() {
+        $settings = get_option('dw_pix_table_design_settings', array());
+        $value = isset($settings['table_pix_text_color']) ? $settings['table_pix_text_color'] : '#e65100';
+        
+        echo '<input type="color" name="dw_pix_table_design_settings[table_pix_text_color]" value="' . esc_attr($value) . '" />';
+        echo '<p class="description">' . __('Cor do texto da linha PIX.', 'dw-price-to-pix') . '</p>';
+    }
+    
+    /**
+     * Callback do campo cor das linhas sem juros
+     */
+    public function table_no_interest_row_color_callback() {
+        $settings = get_option('dw_pix_table_design_settings', array());
+        $value = isset($settings['table_no_interest_row_color']) ? $settings['table_no_interest_row_color'] : '#e6f4ea';
+        
+        echo '<input type="color" name="dw_pix_table_design_settings[table_no_interest_row_color]" value="' . esc_attr($value) . '" />';
+        echo '<p class="description">' . __('Cor de fundo das linhas que exibem parcelas sem juros.', 'dw-price-to-pix') . '</p>';
+    }
+    
+    /**
+     * Callback do campo cor do texto sem juros
+     */
+    public function table_no_interest_text_color_callback() {
+        $settings = get_option('dw_pix_table_design_settings', array());
+        $value = isset($settings['table_no_interest_text_color']) ? $settings['table_no_interest_text_color'] : '#2e7d32';
+        
+        echo '<input type="color" name="dw_pix_table_design_settings[table_no_interest_text_color]" value="' . esc_attr($value) . '" />';
+        echo '<p class="description">' . __('Cor do texto das parcelas sem juros.', 'dw-price-to-pix') . '</p>';
+    }
+    
+    /**
+     * Callback do campo cor das bordas
+     */
+    public function table_border_color_callback() {
+        $settings = get_option('dw_pix_table_design_settings', array());
+        $value = isset($settings['table_border_color']) ? $settings['table_border_color'] : '#e9edf2';
+        
+        echo '<input type="color" name="dw_pix_table_design_settings[table_border_color]" value="' . esc_attr($value) . '" />';
+        echo '<p class="description">' . __('Cor das bordas entre as células.', 'dw-price-to-pix') . '</p>';
+    }
+    
+    /**
+     * Callback do campo espaçamento interno
+     */
+    public function table_cell_padding_callback() {
+        $settings = get_option('dw_pix_table_design_settings', array());
+        $value = isset($settings['table_cell_padding']) ? $settings['table_cell_padding'] : '10px 15px';
+        
+        echo '<input type="text" name="dw_pix_table_design_settings[table_cell_padding]" value="' . esc_attr($value) . '" style="width: 200px;" />';
+        echo '<p class="description">' . __('Espaçamento interno das células (ex: 10px 15px). Formato: vertical horizontal.', 'dw-price-to-pix') . '</p>';
+    }
+    
+    /**
+     * Sanitiza e mescla configurações de design da tabela
+     */
+    public function sanitize_table_design_settings($input) {
+        // Se não é array, retorna os dados existentes para não perder nada
+        if (!is_array($input)) {
+            return get_option('dw_pix_table_design_settings', array());
+        }
+        
+        // Obtém valores existentes
+        $existing = get_option('dw_pix_table_design_settings', array());
+        
+        // Mescla novos valores com existentes (novos sobrescrevem)
+        $sanitized = wp_parse_args($input, $existing);
+        
+        // Cores - sanitiza cada campo de cor
+        $color_fields = array(
+            'table_background_color',
+            'table_header_background_color',
+            'table_header_text_color',
+            'table_cell_text_color',
+            'table_row_even_color',
+            'table_row_hover_color',
+            'table_pix_row_color',
+            'table_pix_text_color',
+            'table_no_interest_row_color',
+            'table_no_interest_text_color',
+            'table_border_color'
+        );
+        
+        foreach ($color_fields as $field) {
+            if (isset($sanitized[$field])) {
+                $sanitized[$field] = sanitize_hex_color($sanitized[$field]);
+            }
+        }
+        
+        // Padding
+        if (isset($sanitized['table_cell_padding'])) {
+            $sanitized['table_cell_padding'] = sanitize_text_field($sanitized['table_cell_padding']);
+        }
+        
+        return $sanitized;
+    }
+    
+    /**
+     * Renderiza preview da tabela
+     */
+    private function render_table_preview() {
+        $settings = get_option('dw_pix_table_design_settings', array());
+        
+        // Valores padrão
+        $bg_color = isset($settings['table_background_color']) ? $settings['table_background_color'] : '#fafafa';
+        $header_bg = isset($settings['table_header_background_color']) ? $settings['table_header_background_color'] : '#f0f4f8';
+        $header_text = isset($settings['table_header_text_color']) ? $settings['table_header_text_color'] : '#4a658a';
+        $cell_text = isset($settings['table_cell_text_color']) ? $settings['table_cell_text_color'] : '#333333';
+        $even_row = isset($settings['table_row_even_color']) ? $settings['table_row_even_color'] : '#f8f9fa';
+        $pix_row = isset($settings['table_pix_row_color']) ? $settings['table_pix_row_color'] : '#fff3e0';
+        $pix_text = isset($settings['table_pix_text_color']) ? $settings['table_pix_text_color'] : '#e65100';
+        $no_interest_row = isset($settings['table_no_interest_row_color']) ? $settings['table_no_interest_row_color'] : '#e6f4ea';
+        $no_interest_text = isset($settings['table_no_interest_text_color']) ? $settings['table_no_interest_text_color'] : '#2e7d32';
+        $border_color = isset($settings['table_border_color']) ? $settings['table_border_color'] : '#e9edf2';
+        $padding = isset($settings['table_cell_padding']) ? $settings['table_cell_padding'] : '10px 15px';
+        
+        ?>
+        <div class="dw-pix-preview-box">
+            <h3><?php _e('Preview da Tabela', 'dw-price-to-pix'); ?></h3>
+            <div id="dw-table-preview" style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; background: <?php echo esc_attr($bg_color); ?>; border-radius: 4px; overflow: hidden;">
+                    <thead style="background: <?php echo esc_attr($header_bg); ?>;">
+                        <tr>
+                            <th style="padding: <?php echo esc_attr($padding); ?>; text-align: left; color: <?php echo esc_attr($header_text); ?>; border-bottom: 2px solid <?php echo esc_attr($border_color); ?>;">
+                                <?php _e('Forma de Pagamento', 'dw-price-to-pix'); ?>
+                            </th>
+                            <th style="padding: <?php echo esc_attr($padding); ?>; text-align: left; color: <?php echo esc_attr($header_text); ?>; border-bottom: 2px solid <?php echo esc_attr($border_color); ?>;">
+                                <?php _e('Total', 'dw-price-to-pix'); ?>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background: <?php echo esc_attr($pix_row); ?>; color: <?php echo esc_attr($pix_text); ?>;">
+                            <td style="padding: <?php echo esc_attr($padding); ?>; border-bottom: 1px solid <?php echo esc_attr($border_color); ?>;">
+                                <strong>PIX (10% de desconto)</strong>
+                            </td>
+                            <td style="padding: <?php echo esc_attr($padding); ?>; border-bottom: 1px solid <?php echo esc_attr($border_color); ?>;">
+                                <strong>R$ 90,00</strong>
+                            </td>
+                        </tr>
+                        <tr style="background: <?php echo esc_attr($no_interest_row); ?>; color: <?php echo esc_attr($no_interest_text); ?>;">
+                            <td style="padding: <?php echo esc_attr($padding); ?>; border-bottom: 1px solid <?php echo esc_attr($border_color); ?>;">
+                                1x de R$ 100,00 <span style="font-size: 12px;">sem juros</span>
+                            </td>
+                            <td style="padding: <?php echo esc_attr($padding); ?>; border-bottom: 1px solid <?php echo esc_attr($border_color); ?>;">
+                                <strong>R$ 100,00</strong>
+                            </td>
+                        </tr>
+                        <tr style="background: <?php echo esc_attr($even_row); ?>; color: <?php echo esc_attr($cell_text); ?>;">
+                            <td style="padding: <?php echo esc_attr($padding); ?>; border-bottom: 1px solid <?php echo esc_attr($border_color); ?>;">
+                                2x de R$ 50,00 <span style="font-size: 12px;">sem juros</span>
+                            </td>
+                            <td style="padding: <?php echo esc_attr($padding); ?>; border-bottom: 1px solid <?php echo esc_attr($border_color); ?>;">
+                                <strong>R$ 100,00</strong>
+                            </td>
+                        </tr>
+                        <tr style="background: <?php echo esc_attr($no_interest_row); ?>; color: <?php echo esc_attr($no_interest_text); ?>;">
+                            <td style="padding: <?php echo esc_attr($padding); ?>; border-bottom: 1px solid <?php echo esc_attr($border_color); ?>;">
+                                3x de R$ 33,33 <span style="font-size: 12px;">sem juros</span>
+                            </td>
+                            <td style="padding: <?php echo esc_attr($padding); ?>; border-bottom: 1px solid <?php echo esc_attr($border_color); ?>;">
+                                <strong>R$ 100,00</strong>
+                            </td>
+                        </tr>
+                        <tr style="background: <?php echo esc_attr($even_row); ?>; color: <?php echo esc_attr($cell_text); ?>;">
+                            <td style="padding: <?php echo esc_attr($padding); ?>; border-bottom: none;">
+                                4x de R$ 25,75
+                            </td>
+                            <td style="padding: <?php echo esc_attr($padding); ?>; border-bottom: none;">
+                                <strong>R$ 103,00</strong>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="description" style="margin-top: 10px;">
+                <?php _e('Este preview mostra como a tabela será exibida com as cores configuradas.', 'dw-price-to-pix'); ?>
+            </p>
+        </div>
+        <?php
+    }
+    
+    /**
+     * Obtém configurações de design da tabela
+     *
+     * @return array
+     */
+    public static function get_table_design_settings() {
+        $defaults = array(
+            'table_background_color' => '#fafafa',
+            'table_header_background_color' => '#f0f4f8',
+            'table_header_text_color' => '#4a658a',
+            'table_cell_text_color' => '#333333',
+            'table_row_even_color' => '#f8f9fa',
+            'table_row_hover_color' => '#eef2f7',
+            'table_pix_row_color' => '#fff3e0',
+            'table_pix_text_color' => '#e65100',
+            'table_no_interest_row_color' => '#e6f4ea',
+            'table_no_interest_text_color' => '#2e7d32',
+            'table_border_color' => '#e9edf2',
+            'table_cell_padding' => '10px 15px'
+        );
+        
+        $settings = get_option('dw_pix_table_design_settings', array());
+        return wp_parse_args($settings, $defaults);
     }
 }

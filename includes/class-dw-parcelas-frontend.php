@@ -57,17 +57,18 @@ class DW_Parcelas_Frontend {
             // Resumo das parcelas
             add_action('woocommerce_single_product_summary', array($this, 'display_installments_summary'), $priorities['summary']);
             
-            // Tabela das parcelas (sempre depois do resumo)
-            add_action('woocommerce_single_product_summary', array($this, 'display_installments_table'), $priorities['table']);
+            // Tabela das parcelas (sempre depois do resumo e do PIX)
+            // Prioridade ajustada: summary + 2 para ficar após PIX (que é summary + 1)
+            add_action('woocommerce_single_product_summary', array($this, 'display_installments_table'), $priorities['summary'] + 2);
             
             // Hooks adicionais para garantir posicionamento antes do botão (compatibilidade com Elementor)
             // Usa as mesmas prioridades calculadas para manter ordem relativa
             add_action('woocommerce_before_add_to_cart_form', array($this, 'display_installments_summary'), $priorities['summary']);
-            add_action('woocommerce_before_add_to_cart_form', array($this, 'display_installments_table'), $priorities['table']);
+            add_action('woocommerce_before_add_to_cart_form', array($this, 'display_installments_table'), $priorities['summary'] + 2);
             
             // Hook antes do botão especificamente (usa prioridades calculadas)
             add_action('woocommerce_before_add_to_cart_button', array($this, 'display_installments_summary'), $priorities['summary']);
-            add_action('woocommerce_before_add_to_cart_button', array($this, 'display_installments_table'), $priorities['table']);
+            add_action('woocommerce_before_add_to_cart_button', array($this, 'display_installments_table'), $priorities['summary'] + 2);
         }
         
         // Para produtos variáveis, adiciona JavaScript para atualizar parcelas
@@ -93,6 +94,12 @@ class DW_Parcelas_Frontend {
         
         // Adiciona estilos CSS e scripts
         add_action('wp_enqueue_scripts', array($this, 'enqueue_assets'));
+        
+        // Adiciona CSS personalizado para a tabela (prioridade 999 = por último)
+        add_action('wp_head', array($this, 'inject_table_custom_css'), 999);
+        
+        // Adiciona CSS inline também no footer como fallback (prioridade máxima)
+        add_action('wp_footer', array($this, 'inject_table_custom_css'), 999);
     }
 
     /**
@@ -203,7 +210,7 @@ class DW_Parcelas_Frontend {
         
         // Wrapper externo para a tabela
         echo '<div class="dw-parcelas-table-container-wrapper">';
-        $this->render_installments_table($installments, $table_display_type, $design_settings);
+        $this->render_installments_table($installments, $table_display_type, $design_settings, $price);
         echo '</div>';
     }
 
@@ -264,33 +271,45 @@ class DW_Parcelas_Frontend {
             $icon_html = '<span class="dw-parcelas-icon">' . $this->get_credit_card_icon($design_settings, $is_gallery) . '</span>';
         }
         
-        // Gera estilos inline baseados nas configurações
-        $styles = $this->generate_summary_styles($design_settings);
+        // Verifica se está usando Elementor
+        $using_elementor = isset($design_settings['using_elementor']) && $design_settings['using_elementor'] === true;
         
-        // Gera CSS a partir dos campos visuais (usa localização correta)
-        $generated_css = $this->generate_visual_css($design_settings, $location);
+        // Monta estilos inline APENAS se NÃO estiver usando Elementor
+        $container_style_attr = '';
+        $text_style_attr = '';
         
-        $container_style = $styles['container'];
-        if (!empty($generated_css)) {
-            $container_style .= ' ' . $generated_css;
+        if (!$using_elementor) {
+            // Gera estilos inline baseados nas configurações
+            $styles = $this->generate_summary_styles($design_settings);
+            
+            // Gera CSS a partir dos campos visuais (usa localização correta)
+            $generated_css = $this->generate_visual_css($design_settings, $location);
+            
+            $container_style = $styles['container'];
+            if (!empty($generated_css)) {
+                $container_style .= ' ' . $generated_css;
+            }
+            
+            $container_style_attr = ' style="' . esc_attr($container_style) . '"';
+            $text_style_attr = ' style="' . esc_attr($styles['text']) . '"';
         }
         
         // Classe diferente para galeria
         $container_class = ($location === 'gallery') ? 'dw-parcelas-summary-gallery' : 'dw-parcelas-summary';
         
-        echo '<div class="' . esc_attr($container_class) . '" style="' . esc_attr($container_style) . '">';
+        echo '<div class="' . esc_attr($container_class) . '"' . $container_style_attr . '>';
         
         // Posiciona ícone antes ou depois do texto
         if ($icon_position === 'before') {
             echo $icon_html;
         }
         
-        echo '<span class="dw-parcelas-text" style="' . esc_attr($styles['text']) . '">';
+        echo '<span class="dw-parcelas-text"' . $text_style_attr . '>';
         echo esc_html($text_before);
         printf(
             __('até %dx de %s%s', 'dw-parcelas-customizadas-woo'),
             $installment_number,
-            $installment_value,
+            '<span class="dw-installment-value">' . $installment_value . '</span>',
             $text_after
         );
         echo '</span>';
@@ -303,13 +322,14 @@ class DW_Parcelas_Frontend {
     }
 
     /**
-     * Renderiza a tabela de parcelas
+     * Renderiza a tabela de parcelas (incluindo PIX se disponível)
      *
      * @param array $installments Array de parcelas
      * @param string $display_type Tipo de exibição (accordion, popup, open)
      * @param array $design_settings Configurações de design
+     * @param float $product_price Preço do produto para calcular PIX
      */
-    private function render_installments_table($installments, $display_type = 'accordion', $design_settings = array()) {
+    private function render_installments_table($installments, $display_type = 'accordion', $design_settings = array(), $product_price = 0) {
         $table_class = 'dw-parcelas-table';
         $table_id = 'dw-parcelas-table-' . uniqid();
         $wrapper_class = 'dw-parcelas-table-wrapper';
@@ -330,7 +350,7 @@ class DW_Parcelas_Frontend {
         
         // Botão para abrir (accordion ou popup)
         if ($display_type !== 'open') {
-            $button_text = __('Ver todas as parcelas', 'dw-parcelas-customizadas-woo');
+            $button_text = __('Ver tabela de preço', 'dw-parcelas-customizadas-woo');
             echo '<button type="button" class="dw-parcelas-toggle-btn dw-parcelas-btn-' . esc_attr($display_type) . '" data-target="' . esc_attr($table_id) . '" data-wrapper="' . esc_attr($wrapper_id) . '">';
             echo esc_html($button_text);
             echo '</button>';
@@ -353,11 +373,36 @@ class DW_Parcelas_Frontend {
         
         echo '<thead>';
         echo '<tr>';
-        echo '<th>' . __('Parcelas', 'dw-parcelas-customizadas-woo') . '</th>';
+        echo '<th>' . __('Forma de Pagamento', 'dw-parcelas-customizadas-woo') . '</th>';
         echo '<th>' . __('Total', 'dw-parcelas-customizadas-woo') . '</th>';
         echo '</tr>';
         echo '</thead>';
         echo '<tbody>';
+        
+        // Adiciona linha do PIX se disponível
+        if ($product_price > 0) {
+            // Verifica se tem preço PIX configurado
+            global $product;
+            if ($product) {
+                $pix_core = new DW_Pix_Core();
+                $regular_price = floatval($product->get_regular_price());
+                $pix_price = $pix_core->get_pix_price($product->get_id(), true, $regular_price);
+                
+                if ($pix_price > 0 && $pix_price < $regular_price) {
+                    $discount = $pix_core->calculate_pix_discount($regular_price, $pix_price);
+                    if ($discount['percentage'] > 0) {
+                        echo '<tr class="dw-parcelas-pix-row">';
+                        echo '<td>';
+                        echo '<strong>PIX</strong> <span class="dw-parcelas-label dw-parcelas-pix-discount">(' . number_format($discount['percentage'], 0) . '% ' . __('de desconto', 'dw-parcelas-customizadas-woo') . ')</span>';
+                        echo '</td>';
+                        echo '<td>';
+                        echo '<strong class="dw-pix-price-highlight">' . wc_price($pix_price) . '</strong>';
+                        echo '</td>';
+                        echo '</tr>';
+                    }
+                }
+            }
+        }
         
         foreach ($installments as $installment) {
             $row_class = $installment['has_interest'] ? '' : 'dw-parcelas-no-interest';
@@ -432,9 +477,9 @@ class DW_Parcelas_Frontend {
         
         // Localiza strings para JavaScript
         $strings = array(
-            'showText' => __('Ver todas as parcelas', 'dw-parcelas-customizadas-woo'),
-            'hideText' => __('Ocultar parcelas', 'dw-parcelas-customizadas-woo'),
-            'installmentsLabel' => __('Parcelas', 'dw-parcelas-customizadas-woo'),
+            'showText' => __('Ver tabela de preço', 'dw-parcelas-customizadas-woo'),
+            'hideText' => __('Ocultar tabela', 'dw-parcelas-customizadas-woo'),
+            'installmentsLabel' => __('Forma de Pagamento', 'dw-parcelas-customizadas-woo'),
             'totalLabel' => __('Total', 'dw-parcelas-customizadas-woo'),
             'withoutInterest' => __('sem juros', 'dw-parcelas-customizadas-woo'),
             'closeText' => __('Fechar', 'dw-parcelas-customizadas-woo')
@@ -508,9 +553,14 @@ class DW_Parcelas_Frontend {
 
     /**
      * Retorna as prioridades dos hooks baseadas na posição escolhida
+     * 
+     * ORDEM CORRETA: Resumo → PIX → Tabela
+     * - Resumo: prioridade N
+     * - PIX: prioridade N+1 (definido em class-dw-pix-frontend.php)
+     * - Tabela: prioridade N+2 (para ficar sempre após o PIX)
      *
      * @param string $position Posição escolhida
-     * @return array Array com prioridades para summary e table
+     * @return array Array com prioridade para summary (tabela usa summary+2)
      */
     private function get_hook_priorities($position) {
         // Prioridades padrão do WooCommerce:
@@ -518,43 +568,34 @@ class DW_Parcelas_Frontend {
         // 10 - rating
         // 20 - preço
         // 30 - excerpt
-        // 35 - PIX (se acima das parcelas)
-        // 36 - PIX (se abaixo das parcelas)
+        // 35 - resumo parcelas
+        // 36 - PIX
+        // 37 - tabela parcelas
         // 40 - add to cart (botão comprar)
         // 50 - meta
         
-        // IMPORTANTE: Parcelas e PIX sempre devem aparecer ANTES do botão (prioridade < 40)
-        // Ajustamos opções que colocariam depois do botão para antes
+        // IMPORTANTE: Resumo, PIX e Tabela sempre devem aparecer ANTES do botão (prioridade < 40)
         
         switch ($position) {
             case 'before_price':
-                return array('summary' => 15, 'table' => 16);
+                return array('summary' => 15);
             
             case 'after_price':
-                return array('summary' => 25, 'table' => 26);
+                return array('summary' => 25);
             
             case 'before_add_to_cart':
                 // Antes do botão (padrão recomendado)
-                return array('summary' => 35, 'table' => 36);
+                return array('summary' => 35);
             
             case 'after_add_to_cart':
-                // Ajustado: força para antes do botão (35) ao invés de depois (45)
-                // Pois o requisito é sempre acima do botão
-                return array('summary' => 35, 'table' => 36);
-            
             case 'before_meta':
-                // Meta está em 50, mas botão está em 40
-                // Ajustado: força para antes do botão
-                return array('summary' => 35, 'table' => 36);
-            
             case 'after_meta':
-                // Meta está em 50, mas botão está em 40
-                // Ajustado: força para antes do botão
-                return array('summary' => 35, 'table' => 36);
+                // Sempre força para antes do botão
+                return array('summary' => 35);
             
             default:
-                // Padrão: antes do botão (garante que sempre aparece acima)
-                return array('summary' => 35, 'table' => 36);
+                // Padrão: antes do botão
+                return array('summary' => 35);
         }
     }
 
@@ -583,12 +624,26 @@ class DW_Parcelas_Frontend {
         $settings = $this->get_installments_settings();
         $design_settings = $this->get_installments_design_settings();
         
-        // Usa renderização completa para galeria com as configurações do painel
-        // Gera CSS a partir dos campos visuais (galeria)
-        $generated_css = $this->generate_visual_css($design_settings, 'gallery');
-        $wrapper_style = !empty($generated_css) ? ' style="' . esc_attr($generated_css) . '"' : '';
+        // Permite que o Elementor modifique as configurações
+        $design_settings = apply_filters('dw_installments_gallery_settings', $design_settings, $product);
         
-        echo '<div class="dw-parcelas-gallery-wrapper"' . $wrapper_style . '>';
+        // Verifica se o Elementor desabilitou a exibição
+        if (isset($design_settings['dw_show_installments']) && $design_settings['dw_show_installments'] === 'no') {
+            return;
+        }
+        
+        // Adiciona classes adicionais do Elementor se disponíveis
+        $extra_classes = isset($design_settings['dw_installments_elementor_class']) ? ' ' . esc_attr($design_settings['dw_installments_elementor_class']) : '';
+        $using_elementor = isset($design_settings['using_elementor']) && $design_settings['using_elementor'] === true;
+        
+        // Monta estilos inline APENAS se NÃO estiver usando Elementor
+        $wrapper_style = '';
+        if (!$using_elementor) {
+            $generated_css = $this->generate_visual_css($design_settings, 'gallery');
+            $wrapper_style = !empty($generated_css) ? ' style="' . esc_attr($generated_css) . '"' : '';
+        }
+        
+        echo '<div class="dw-parcelas-gallery-wrapper dw-installments-info dw-installments-info-gallery' . $extra_classes . '"' . $wrapper_style . '>';
         $this->render_best_installment_summary($best, $price, $design_settings, 'gallery');
         echo '</div>';
     }
@@ -808,6 +863,116 @@ class DW_Parcelas_Frontend {
                 true
             );
         }
+    }
+    
+    /**
+     * Injeta CSS personalizado para a tabela de parcelas
+     * 
+     * Aplica as cores configuradas no painel administrativo à tabela no frontend.
+     * Usa alta especificidade para sobrescrever estilos de temas.
+     */
+    public function inject_table_custom_css() {
+        // Obtém as configurações de design da tabela
+        $table_settings = DW_Pix_Settings::get_table_design_settings();
+        
+        // Inicia o CSS personalizado com alta especificidade
+        $css = '<style id="dw-parcelas-table-custom-css">';
+        
+        // Fundo da tabela - múltiplos seletores para máxima especificidade
+        $css .= 'table.dw-parcelas-table, .dw-parcelas-table-wrapper table.dw-parcelas-table { ';
+        $css .= 'background-color: ' . esc_attr($table_settings['table_background_color']) . ' !important; }';
+        
+        // Cabeçalho da tabela
+        $css .= 'table.dw-parcelas-table thead, .dw-parcelas-table-wrapper table.dw-parcelas-table thead { ';
+        $css .= 'background-color: ' . esc_attr($table_settings['table_header_background_color']) . ' !important; }';
+        
+        $css .= 'table.dw-parcelas-table thead th, .dw-parcelas-table-wrapper table.dw-parcelas-table thead th, ';
+        $css .= 'table.dw-parcelas-table th, .dw-parcelas-table-wrapper table.dw-parcelas-table th { ';
+        $css .= 'color: ' . esc_attr($table_settings['table_header_text_color']) . ' !important; ';
+        $css .= 'background-color: ' . esc_attr($table_settings['table_header_background_color']) . ' !important; ';
+        $css .= 'border-bottom-color: ' . esc_attr($table_settings['table_border_color']) . ' !important; ';
+        $css .= 'padding: ' . esc_attr($table_settings['table_cell_padding']) . ' !important; }';
+        
+        // Células da tabela
+        $css .= 'table.dw-parcelas-table tbody td, .dw-parcelas-table-wrapper table.dw-parcelas-table tbody td, ';
+        $css .= 'table.dw-parcelas-table td, .dw-parcelas-table-wrapper table.dw-parcelas-table td { ';
+        $css .= 'color: ' . esc_attr($table_settings['table_cell_text_color']) . ' !important; ';
+        $css .= 'border-bottom-color: ' . esc_attr($table_settings['table_border_color']) . ' !important; ';
+        $css .= 'padding: ' . esc_attr($table_settings['table_cell_padding']) . ' !important; ';
+        $css .= 'background-color: transparent !important; }';
+        
+        // Linhas da tabela (reset de fundo)
+        $css .= 'table.dw-parcelas-table tbody tr, .dw-parcelas-table-wrapper table.dw-parcelas-table tbody tr { ';
+        $css .= 'background-color: ' . esc_attr($table_settings['table_background_color']) . ' !important; }';
+        
+        // Linhas pares (zebrado)
+        $css .= 'table.dw-parcelas-table tbody tr:nth-child(even), ';
+        $css .= '.dw-parcelas-table-wrapper table.dw-parcelas-table tbody tr:nth-child(even) { ';
+        $css .= 'background-color: ' . esc_attr($table_settings['table_row_even_color']) . ' !important; }';
+        
+        $css .= 'table.dw-parcelas-table tbody tr:nth-child(even) td, ';
+        $css .= '.dw-parcelas-table-wrapper table.dw-parcelas-table tbody tr:nth-child(even) td { ';
+        $css .= 'background-color: transparent !important; }';
+        
+        // Hover - com múltiplas variações
+        $css .= 'table.dw-parcelas-table tbody tr:hover, ';
+        $css .= '.dw-parcelas-table-wrapper table.dw-parcelas-table tbody tr:hover, ';
+        $css .= 'table.dw-parcelas-table tbody tr:hover td, ';
+        $css .= '.dw-parcelas-table-wrapper table.dw-parcelas-table tbody tr:hover td { ';
+        $css .= 'background-color: ' . esc_attr($table_settings['table_row_hover_color']) . ' !important; }';
+        
+        // Linha PIX - máxima especificidade
+        $css .= 'table.dw-parcelas-table tbody tr.dw-parcelas-pix-row, ';
+        $css .= '.dw-parcelas-table-wrapper table.dw-parcelas-table tbody tr.dw-parcelas-pix-row, ';
+        $css .= 'table.dw-parcelas-table tbody tr.dw-parcelas-pix-row:nth-child(odd), ';
+        $css .= 'table.dw-parcelas-table tbody tr.dw-parcelas-pix-row:nth-child(even) { ';
+        $css .= 'background-color: ' . esc_attr($table_settings['table_pix_row_color']) . ' !important; ';
+        $css .= 'color: ' . esc_attr($table_settings['table_pix_text_color']) . ' !important; }';
+        
+        $css .= 'table.dw-parcelas-table tbody tr.dw-parcelas-pix-row td, ';
+        $css .= '.dw-parcelas-table-wrapper table.dw-parcelas-table tbody tr.dw-parcelas-pix-row td, ';
+        $css .= 'table.dw-parcelas-table tbody tr.dw-parcelas-pix-row td strong, ';
+        $css .= 'table.dw-parcelas-table tbody tr.dw-parcelas-pix-row td span { ';
+        $css .= 'color: ' . esc_attr($table_settings['table_pix_text_color']) . ' !important; ';
+        $css .= 'background-color: transparent !important; }';
+        
+        // Hover da linha PIX
+        $css .= 'table.dw-parcelas-table tbody tr.dw-parcelas-pix-row:hover, ';
+        $css .= '.dw-parcelas-table-wrapper table.dw-parcelas-table tbody tr.dw-parcelas-pix-row:hover, ';
+        $css .= 'table.dw-parcelas-table tbody tr.dw-parcelas-pix-row:hover td { ';
+        $css .= 'background-color: ' . esc_attr($table_settings['table_row_hover_color']) . ' !important; }';
+        
+        // Linhas sem juros - máxima especificidade
+        $css .= 'table.dw-parcelas-table tbody tr.dw-parcelas-no-interest, ';
+        $css .= '.dw-parcelas-table-wrapper table.dw-parcelas-table tbody tr.dw-parcelas-no-interest, ';
+        $css .= 'table.dw-parcelas-table tbody tr.dw-parcelas-no-interest:nth-child(odd), ';
+        $css .= 'table.dw-parcelas-table tbody tr.dw-parcelas-no-interest:nth-child(even) { ';
+        $css .= 'background-color: ' . esc_attr($table_settings['table_no_interest_row_color']) . ' !important; ';
+        $css .= 'color: ' . esc_attr($table_settings['table_no_interest_text_color']) . ' !important; }';
+        
+        $css .= 'table.dw-parcelas-table tbody tr.dw-parcelas-no-interest td, ';
+        $css .= '.dw-parcelas-table-wrapper table.dw-parcelas-table tbody tr.dw-parcelas-no-interest td, ';
+        $css .= 'table.dw-parcelas-table tbody tr.dw-parcelas-no-interest td strong, ';
+        $css .= 'table.dw-parcelas-table tbody tr.dw-parcelas-no-interest td span, ';
+        $css .= 'table.dw-parcelas-table tbody tr.dw-parcelas-no-interest .dw-parcelas-label { ';
+        $css .= 'color: ' . esc_attr($table_settings['table_no_interest_text_color']) . ' !important; ';
+        $css .= 'background-color: transparent !important; }';
+        
+        // Hover das linhas sem juros
+        $css .= 'table.dw-parcelas-table tbody tr.dw-parcelas-no-interest:hover, ';
+        $css .= '.dw-parcelas-table-wrapper table.dw-parcelas-table tbody tr.dw-parcelas-no-interest:hover, ';
+        $css .= 'table.dw-parcelas-table tbody tr.dw-parcelas-no-interest:hover td { ';
+        $css .= 'background-color: ' . esc_attr($table_settings['table_row_hover_color']) . ' !important; }';
+        
+        // Remove background de elementos filhos que podem herdar estilos
+        $css .= 'table.dw-parcelas-table tbody tr td *, ';
+        $css .= '.dw-parcelas-table-wrapper table.dw-parcelas-table tbody tr td * { ';
+        $css .= 'background-color: transparent !important; }';
+        
+        $css .= '</style>';
+        
+        // Imprime o CSS no head
+        echo $css;
     }
 }
 

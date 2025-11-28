@@ -1,7 +1,7 @@
 {
     "name": "agenciadw/dw-parcelas-customizadas-woo",
     "description": "Plugin completo para WooCommerce: preços especiais PIX e exibição profissional de parcelas de cartão de crédito. Compatível com Elementor.",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
     "authors": [

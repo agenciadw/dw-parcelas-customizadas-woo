@@ -1,15 +1,33 @@
 /**
  * JavaScript para frontend - Parcelas e PIX
+ * 
+ * Este arquivo gerencia a exibição dinâmica de parcelas e preços PIX no frontend,
+ * incluindo produtos variáveis, accordion/popup de parcelas e atualização em tempo real.
+ * 
  * @package DW_Parcelas_Pix_WooCommerce
+ * @since 0.2.0
  */
 
 (function($) {
     'use strict';
 
-    // Classe para gerenciar parcelas de produtos variáveis
+    /**
+     * Classe VariableInstallments
+     * 
+     * Gerencia o cálculo e exibição de parcelas para produtos variáveis.
+     * Atualiza automaticamente as parcelas quando o cliente seleciona uma variação.
+     */
     var VariableInstallments = {
         
-        // Configurações
+        /**
+         * Configurações da classe
+         * 
+         * @property {Object} variationPrices - Mapa de preços por variação
+         * @property {Object} settings - Configurações globais de parcelas
+         * @property {Object} designSettings - Configurações de design
+         * @property {Object} strings - Strings traduzíveis
+         * @property {jQuery} container - Container DOM para as parcelas
+         */
         config: {
             variationPrices: {},
             settings: {},
@@ -18,7 +36,11 @@
             container: null
         },
 
-        // Inicializa o sistema
+        /**
+         * Inicializa o sistema de parcelas variáveis
+         * 
+         * Configura o container, vincula eventos e realiza atualização inicial.
+         */
         init: function() {
             if (typeof window.dwParcelasData === 'undefined') {
                 return;
@@ -36,7 +58,11 @@
             setTimeout(this.updateInstallments.bind(this), 500);
         },
 
-        // Configura o container para exibir parcelas
+        /**
+         * Configura o container DOM para exibir as parcelas
+         * 
+         * Cria o container se não existir e armazena referência para uso posterior.
+         */
         setupContainer: function() {
             var $container = $('.dw-parcelas-variation-container');
             
@@ -54,7 +80,11 @@
             this.config.container = $container;
         },
 
-        // Vincula eventos
+        /**
+         * Vincula eventos do WooCommerce para detectar mudança de variação
+         * 
+         * Monitora eventos de mudança de variação para atualizar as parcelas.
+         */
         bindEvents: function() {
             var self = this;
             
@@ -77,7 +107,11 @@
             });
         },
 
-        // Atualiza as parcelas
+        /**
+         * Atualiza as parcelas baseado na variação selecionada
+         * 
+         * Obtém o preço da variação selecionada e recalcula as parcelas.
+         */
         updateInstallments: function() {
             var selectedVariation = this.getSelectedVariation();
             
@@ -95,7 +129,11 @@
             }
         },
 
-        // Obtém a variação selecionada
+        /**
+         * Obtém o ID da variação atualmente selecionada
+         * 
+         * @return {string|null} ID da variação ou null se nenhuma selecionada
+         */
         getSelectedVariation: function() {
             var variationId = $('input[name="variation_id"]').val();
             
@@ -110,7 +148,11 @@
             return variationId;
         },
 
-        // Exibe as parcelas
+        /**
+         * Exibe as parcelas para um determinado preço
+         * 
+         * @param {number} price - Preço do produto para calcular parcelas
+         */
         showInstallments: function(price) {
             price = parseFloat(price);
             
@@ -133,7 +175,14 @@
             ParcelasAccordion.init();
         },
 
-        // Calcula as parcelas
+        /**
+         * Calcula as parcelas com ou sem juros
+         * 
+         * Aplica a fórmula de juros compostos e respeita o valor mínimo de parcela.
+         * 
+         * @param {number} price - Preço base para cálculo
+         * @return {Array} Array de objetos com informações de cada parcela
+         */
         calculateInstallments: function(price) {
             var settings = this.config.settings;
             var maxInstallments = parseInt(settings.max_installments) || 12;
@@ -173,7 +222,15 @@
             return installments;
         },
 
-        // Gera HTML das parcelas
+        /**
+         * Gera o HTML completo para exibição das parcelas
+         * 
+         * Inclui resumo da melhor condição e tabela completa de parcelas.
+         * 
+         * @param {number} price - Preço total do produto
+         * @param {Array} installments - Array com informações das parcelas
+         * @return {string} HTML formatado das parcelas
+         */
         generateInstallmentsHTML: function(price, installments) {
             if (installments.length === 0) {
                 return '';
@@ -259,7 +316,7 @@
                     tableClass += ' dw-parcelas-table-hidden';
                     var buttonClass = 'dw-parcelas-toggle-btn dw-parcelas-btn-' + tableDisplayType;
                     html += '<button type="button" class="' + buttonClass + '" data-target="' + tableId + '" data-wrapper="' + wrapperId + '">';
-                    html += strings.showText || 'Ver todas as parcelas';
+                    html += strings.showText || 'Ver tabela de preço';
                     html += '</button>';
                 }
                 
@@ -275,10 +332,12 @@
                     html += '<table id="' + tableId + '" class="' + tableClass + '">';
                 }
             html += '<thead><tr>';
-            html += '<th>' + (strings.installmentsLabel || 'Parcelas') + '</th>';
+            html += '<th>' + (strings.installmentsLabel || 'Forma de Pagamento') + '</th>';
             html += '<th>' + (strings.totalLabel || 'Total') + '</th>';
             html += '</tr></thead>';
             html += '<tbody>';
+            
+            // TODO: Adicionar linha do PIX dinamicamente quando disponível
             
             for (var i = 0; i < installments.length; i++) {
                 var inst = installments[i];
@@ -311,7 +370,12 @@
             return html;
         },
 
-        // Gera estilos para o resumo
+        /**
+         * Gera estilos CSS inline para o resumo das parcelas
+         * 
+         * @param {Object} designSettings - Configurações de design
+         * @return {Object} Objeto com estilos CSS para container e texto
+         */
         generateSummaryStyles: function(designSettings) {
             var bgColor = designSettings.background_color || '#f5f5f5';
             var allowTransparent = designSettings.allow_transparent_background === '1' || designSettings.allow_transparent_background === 1;
@@ -338,7 +402,12 @@
             };
         },
 
-        // Formata preço no formato brasileiro
+        /**
+         * Formata um valor numérico para o formato de moeda brasileira
+         * 
+         * @param {number} value - Valor a ser formatado
+         * @return {string} Valor formatado (ex: "R$ 1.234,56")
+         */
         formatPrice: function(value) {
             value = parseFloat(value);
             if (isNaN(value)) {
@@ -358,7 +427,12 @@
             return 'R$ ' + parts.join(',');
         },
 
-        // Retorna HTML do ícone do cartão
+        /**
+         * Retorna o HTML do ícone do cartão de crédito
+         * 
+         * @param {Object} designSettings - Configurações de design
+         * @return {string} HTML do ícone (SVG ou img tag)
+         */
         getCreditCardIconHtml: function(designSettings) {
             var iconUrl = designSettings.credit_card_icon_custom || '';
             var defaultIconUrl = '';
@@ -382,19 +456,30 @@
             }
         },
 
-        // Oculta as parcelas
+        /**
+         * Oculta as parcelas do container
+         */
         hideInstallments: function() {
             this.config.container.hide();
         }
     };
 
-    // Expõe a classe globalmente
+    // Expõe a classe globalmente para acesso externo
     window.DWVariableInstallments = VariableInstallments;
 
-    // Funções para accordion e popup de parcelas
+    /**
+     * Classe ParcelasAccordion
+     * 
+     * Gerencia a funcionalidade de accordion e popup da tabela de parcelas.
+     * Permite ao usuário expandir/recolher ou abrir em popup a tabela completa.
+     */
     var ParcelasAccordion = {
         
-        // Inicializa controles (accordion/popup)
+        /**
+         * Inicializa os controles de accordion e popup
+         * 
+         * Configura eventos de clique para expandir/recolher e abrir/fechar popup.
+         */
         init: function() {
             // Remove eventos anteriores para evitar duplicação
             $(document).off('click', '.dw-parcelas-toggle-btn');
@@ -411,8 +496,8 @@
                 var $container = $table.closest('.dw-parcelas-table-container');
                 
                 var strings = (typeof window.dwParcelasData !== 'undefined' && window.dwParcelasData.strings) ? window.dwParcelasData.strings : {};
-                var showText = strings.showText || 'Ver todas as parcelas';
-                var hideText = strings.hideText || 'Ocultar parcelas';
+                var showText = strings.showText || 'Ver tabela de preço';
+                var hideText = strings.hideText || 'Ocultar tabela';
                 
                 // Verifica se o container está visível
                 var isVisible = $container.length ? $container.is(':visible') : $table.is(':visible');
@@ -531,7 +616,11 @@
             });
         },
         
-        // Fecha popup
+        /**
+         * Fecha o popup de parcelas
+         * 
+         * @param {string} wrapperId - ID do wrapper do popup a ser fechado
+         */
         closePopup: function(wrapperId) {
             var $popupContent = $('.dw-parcelas-popup-content-active');
             
@@ -552,12 +641,14 @@
         }
     };
 
-    // Inicializa quando o documento está pronto
+    /**
+     * Inicialização quando o documento estiver pronto
+     * 
+     * Os eventos são registrados com event delegation (document.on) 
+     * para funcionar automaticamente com elementos adicionados dinamicamente.
+     */
     $(document).ready(function() {
         ParcelasAccordion.init();
-        
-        // REMOVIDO: MutationObserver causava loop infinito
-        // Os eventos são registrados com delegation (document.on) então funcionam automaticamente
     });
 
 })(jQuery);

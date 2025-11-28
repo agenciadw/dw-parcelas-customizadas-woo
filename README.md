@@ -189,6 +189,14 @@ O plugin é **100% compatível** com o HPOS do WooCommerce, que melhora signific
 - ✅ Não interfere no funcionamento do sistema de pedidos
 - ✅ Mantém todas as funcionalidades independente do status do HPOS
 
+## Destaques da versão 0.2.0
+
+- 🧹 **Código Limpo**: Revisão completa seguindo princípios de Clean Code
+- 🇧🇷 **Documentação em Português**: Comentários e documentação completamente em português
+- 🎨 **Interface Aprimorada**: Melhorias visuais e de experiência do usuário
+- ⚡ **Performance Otimizada**: Código mais eficiente e rápido
+- 🔐 **Segurança Reforçada**: Validações e sanitizações aprimoradas
+
 ## Destaques da versão 0.1.0
 
 - 🔁 **Arquitetura unificada**: PIX e Parcelas funcionando juntos com prioridades dinâmicas que garantem exibição acima do botão comprar (inclusive no Elementor).
@@ -207,6 +215,15 @@ Para suporte, reporte bugs ou solicite funcionalidades, visite:
 - [GitHub Repository](https://github.com/agenciadw/dw-parcelas-customizadas-woo)
 
 ## Changelog
+
+### 0.2.0 (Melhorias e Otimizações)
+- ✨ **Clean Code**: Revisão completa do código com melhorias de legibilidade e manutenibilidade
+- 📝 **Comentários em Português**: Todos os arquivos agora possuem comentários em português
+- 🎨 **UX/UI Melhorado**: Otimizações visuais no painel administrativo e frontend
+- 🚀 **Performance**: Otimização de queries e lógica de renderização
+- 🔒 **Segurança**: Melhorias adicionais nas validações e sanitizações
+- 🐛 **Correções**: Pequenos ajustes e correções de bugs
+- 📦 **Código Otimizado**: Remoção de redundâncias e melhor organização dos arquivos
 
 ### 0.1.0 (Lançamento)
 - Integração completa PIX + Parcelas com posicionamento dinâmico e compatibilidade Elementor

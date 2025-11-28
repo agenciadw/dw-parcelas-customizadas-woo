@@ -1,10 +1,17 @@
 /**
- * Estilos do frontend para DW Price to PIX
- *
- * @package DW_Price_To_Pix
+ * Estilos do frontend - DW Parcelas e Pix Customizadas
+ * 
+ * Este arquivo contém todos os estilos CSS para o frontend do plugin,
+ * incluindo preços PIX, parcelas de cartão, tabelas, accordion e popup.
+ * 
+ * @package DW_Parcelas_Pix_WooCommerce
+ * @since 0.2.0
  */
 
-/* Container do preço PIX na página do produto */
+/* ==========================================================================
+   Preço PIX - Container Principal
+   ========================================================================== */
+
 .dw-pix-price-info {
     background: #e8f5e9;
     padding: 15px;
@@ -35,7 +42,10 @@
     font-weight: 500;
 }
 
-/* Desconto no carrinho/checkout */
+/* ==========================================================================
+   Desconto PIX - Carrinho e Checkout
+   ========================================================================== */
+
 .dw-pix-cart-discount {
     color: #4caf50 !important;
     font-weight: 600;
@@ -81,14 +91,15 @@
     }
 }
 
-/* Animação suave */
+/* Animação suave ao atualizar */
 .dw-pix-price-info {
     transition: all 0.3s ease;
 }
 
-/* Hover removido do PIX */
+/* ==========================================================================
+   Preço PIX - Galeria de Produtos
+   ========================================================================== */
 
-/* Preço PIX na galeria de produtos */
 .dw-pix-gallery-price {
     margin-top: 5px;
     font-size: 12px;
@@ -100,7 +111,10 @@
     font-weight: 600;
 }
 
-/* Ícone de imagem PIX */
+/* ==========================================================================
+   Ícones - PIX e Cartão
+   ========================================================================== */
+
 .dw-pix-icon-image {
     width: 20px;
     height: 20px;
@@ -148,6 +162,8 @@
 /* ============================================
    ESTILOS PARA PARCELAS DE CARTÃO DE CRÉDITO
    ============================================ */
+   
+/* ORDEM DE EXIBIÇÃO: Resumo → PIX → Tabela de Preços */
 
 /* Container principal das parcelas */
 .dw-parcelas-container {
@@ -186,15 +202,15 @@
     margin-top: 10px;
 }
 
-/* Botão para expandir tabela */
+/* Botão para expandir tabela - Cores claras e suaves */
 .dw-parcelas-toggle-btn {
-    background: transparent;
-    border: 1px solid #ddd;
+    background: #f0f4f8;
+    border: 1px solid #d1dce5;
     padding: 8px 16px;
     cursor: pointer;
     border-radius: 4px;
     font-size: 14px;
-    color: #666;
+    color: #5a6c7d;
     transition: all 0.3s ease;
     margin-bottom: 10px;
     width: auto;
@@ -202,9 +218,9 @@
 }
 
 .dw-parcelas-toggle-btn:hover {
-    background: #f5f5f5;
-    border-color: #999;
-    color: #333;
+    background: #e1e8ed;
+    border-color: #b8c5d1;
+    color: #2c3e50;
 }
 
 .dw-parcelas-toggle-btn:focus {
@@ -213,25 +229,24 @@
 }
 
 .dw-parcelas-toggle-btn.dw-parcelas-active {
-    background: #4caf50;
-    border-color: #4caf50;
+    background: #3498db;
+    border-color: #3498db;
     color: #fff;
 }
 
 .dw-parcelas-toggle-btn.dw-parcelas-active:hover {
-    background: #45a049;
-    border-color: #45a049;
+    background: #2980b9;
+    border-color: #2980b9;
 }
 
-/* Tabela de parcelas */
+/* Tabela de parcelas - Estrutura base (cores definidas via PHP dinâmico) */
 .dw-parcelas-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
-    background: #fff;
     border-radius: 4px;
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .dw-parcelas-table-hidden {
@@ -254,8 +269,9 @@
     display: table !important;
 }
 
+/* Cabeçalho - cores definidas via PHP dinâmico */
 .dw-parcelas-table thead {
-    background: #f8f9fa;
+    /* background via PHP */
 }
 
 .dw-parcelas-table th {
@@ -263,49 +279,75 @@
     text-align: left;
     font-weight: 600;
     font-size: 14px;
-    color: #333;
-    border-bottom: 2px solid #e0e0e0;
+    /* cores via PHP */
 }
 
+/* Células - cores definidas via PHP dinâmico */
 .dw-parcelas-table td {
     padding: 10px 15px;
-    border-bottom: 1px solid #e0e0e0;
     font-size: 14px;
+    /* cores via PHP */
 }
 
 .dw-parcelas-table tbody tr:last-child td {
     border-bottom: none;
 }
 
-/* Zebrado (striped) */
+/* Zebrado (striped) - cores via PHP */
 .dw-parcelas-table tbody tr:nth-child(even) {
-    background: #f8f9fa;
+    /* background via PHP */
 }
 
 .dw-parcelas-table tbody tr:hover {
-    background: #f0f0f0;
+    /* background via PHP */
+    transition: background 0.2s ease;
 }
 
-/* Parcelas sem juros em negrito */
+/* Parcelas sem juros - cores via PHP dinâmico */
 .dw-parcelas-table tbody tr.dw-parcelas-no-interest {
     font-weight: 600;
-    background: #e8f5e9;
+    /* background e color via PHP */
 }
 
 .dw-parcelas-table tbody tr.dw-parcelas-no-interest:hover {
-    background: #c8e6c9;
+    /* background via PHP */
 }
 
 .dw-parcelas-table tbody tr.dw-parcelas-no-interest:nth-child(even) {
-    background: #e8f5e9;
+    /* background via PHP */
 }
 
-/* Label "sem juros" */
+/* Linha do PIX - cores via PHP dinâmico */
+.dw-parcelas-table tbody tr.dw-parcelas-pix-row {
+    font-weight: 600;
+    /* background e color via PHP */
+}
+
+.dw-parcelas-table tbody tr.dw-parcelas-pix-row:hover {
+    /* background via PHP */
+}
+
+.dw-parcelas-table tbody tr.dw-parcelas-pix-row td {
+    background: transparent;
+}
+
+.dw-parcelas-pix-row .dw-pix-price-highlight {
+    font-size: 16px;
+    font-weight: 700;
+    /* color via PHP */
+}
+
+/* Label "sem juros" e desconto PIX - cores via PHP */
 .dw-parcelas-label {
     font-size: 12px;
-    color: #4caf50;
     font-weight: 500;
     margin-left: 5px;
+    /* color via PHP (herda da linha) */
+}
+
+.dw-parcelas-pix-discount {
+    font-weight: 600;
+    /* color via PHP */
 }
 
 /* Container para variações */
@@ -350,7 +392,10 @@
     }
 }
 
-/* Popup Modal */
+/* ==========================================================================
+   Popup Modal - Tabela de Preços
+   ========================================================================== */
+
 .dw-parcelas-popup-overlay {
     display: none;
     position: fixed;
@@ -370,15 +415,15 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: #fff;
-    border-radius: 8px;
+    background: #fafafa;
+    border-radius: 12px;
     padding: 30px;
     max-width: 90%;
     width: 600px;
     max-height: 80vh;
     overflow-y: auto;
     z-index: 9999;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .dw-parcelas-popup-content-active {
@@ -399,24 +444,44 @@
 
 .dw-parcelas-popup-close {
     margin-top: 15px;
-    padding: 10px 20px;
-    background: #2c3e50;
+    padding: 12px 20px;
+    background: #3498db;
     color: #fff;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
+    font-weight: 600;
     width: 100%;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .dw-parcelas-popup-close:hover {
-    background: #34495e;
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
 }
 
 /* Previne scroll do body quando popup está aberto */
 body.dw-parcelas-popup-open {
     overflow: hidden;
+}
+
+/* Melhorias de legibilidade - Espaçamento entre linhas */
+.dw-parcelas-table tbody tr td {
+    line-height: 1.6;
+}
+
+/* Destaque para valores monetários */
+.dw-parcelas-table strong {
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+/* Melhor contraste para hover */
+.dw-parcelas-table tbody tr:focus-within {
+    outline: 2px solid #3498db;
+    outline-offset: -2px;
 }
 
 /* Responsividade para popup */

@@ -1,8 +1,16 @@
 /**
- * Estilos do admin para DW Price to PIX
- *
- * @package DW_Price_To_Pix
+ * Estilos do painel administrativo - DW Parcelas e Pix Customizadas
+ * 
+ * Este arquivo contém todos os estilos CSS para o painel administrativo do plugin,
+ * incluindo preview em tempo real, abas de configuração, campos de formulário e botões.
+ * 
+ * @package DW_Parcelas_Pix_WooCommerce
+ * @since 0.2.0
  */
+
+/* ==========================================================================
+   Container Principal do Admin
+   ========================================================================== */
 
 .dw-pix-admin-container {
     display: flex;
@@ -77,7 +85,10 @@
     margin-right: 5px;
 }
 
-/* Campos de configuração */
+/* ==========================================================================
+   Campos de Configuração
+   ========================================================================== */
+
 .form-table th {
     width: 200px;
     padding: 20px 10px 20px 0;
@@ -110,7 +121,10 @@
     margin-top: 5px;
 }
 
-/* Ícones sugeridos */
+/* ==========================================================================
+   Ícones Personalizados
+   ========================================================================== */
+
 .dw-pix-suggested-icons {
     display: flex;
     gap: 10px;
@@ -145,7 +159,10 @@
     }
 }
 
-/* Botão de reset */
+/* ==========================================================================
+   Botões de Ação
+   ========================================================================== */
+
 .dw-pix-reset-button {
     background: #FF9800 !important;
     color: #fff !important;
@@ -827,5 +844,23 @@
 .wp-core-ui .button-primary,
 .wp-core-ui .button-secondary {
     line-height: normal !important;
+}
+
+/* ==========================================================================
+   Melhorias de Acessibilidade
+   ========================================================================== */
+
+/* Melhor feedback visual para foco em elementos interativos */
+.dw-pix-settings-wrap input:focus,
+.dw-pix-settings-wrap select:focus,
+.dw-pix-settings-wrap textarea:focus {
+    outline: 2px solid #4caf50;
+    outline-offset: 2px;
+}
+
+/* Melhor contraste para textos de ajuda */
+.dw-pix-settings-wrap .description {
+    color: #5a5a5a;
+    line-height: 1.5;
 }
 
